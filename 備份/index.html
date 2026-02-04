@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>記者發布會專案管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f172a',
+                        secondary: '#334155',
+                        accent: '#3b82f6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-primary text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-wide">📅 記者發布會專案 Dashboard</h1>
+            <div class="text-sm opacity-80">2026 年度專案</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-200 mb-8">
+            <button onclick="switchTab('groups')" id="tab-groups" class="px-6 py-3 text-lg font-medium text-accent border-b-2 border-accent hover:bg-gray-50 transition-colors focus:outline-none">
+                👥 各組工作分配
+            </button>
+            <button onclick="switchTab('rundown')" id="tab-rundown" class="px-6 py-3 text-lg font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300 transition-colors focus:outline-none">
+                ⏱️ 活動流程表
+            </button>
+        </div>
+
+        <!-- Groups Content -->
+        <div id="content-groups" class="tab-content active animate-fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="groups-container">
+                <!-- Groups will be injected here -->
+            </div>
+        </div>
+
+        <!-- Rundown Content -->
+        <div id="content-rundown" class="tab-content animate-fade-in">
+            <div class="overflow-x-auto bg-white rounded-lg shadow">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider w-24">時間</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider w-32">項目</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">執行重點</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider w-48">負責組別</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider w-48">備註</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="rundown-container">
+                        <!-- Rundown rows will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-400 py-6 mt-12">
+        <div class="container mx-auto px-4 text-center text-sm">
+            &copy; 2026 Press Conference Project. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Modal for Detailed Group View -->
+    <div id="group-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300 opacity-0" onclick="if(event.target === this) closeGroupModal()">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="modal-content">
+            <!-- Content injected by JS -->
+        </div>
+    </div>
+
+    <!-- JavaScript Data & Logic -->
+    <script>
+        // Data
+        const groupsData = [
+            {
+                id: 0, 
+                name: "總召", 
+                leader: "品嘉, Zoe",
+                count: "2",
+                desc: "全局指揮與通訊",
+                mission: "負責 1F 與 B1 通訊調度，總召。", 
+                color: "bg-red-100 text-red-800",
+                notes: {
+                    before: ["確認各組無線電、Rundown。", "確認地下室通訊死角與中繼人員配置。"],
+                    during: ["1F 與 B1 通訊調度。", "全場進度監控與突發狀況指揮。"],
+                    after: ["確認場地復原情形。", "宣布全體解散。"]
+                }
+            },
+            {
+                id: 1, 
+                name: "餐飲", 
+                leader: "組長, 副組長",
+                count: "6",
+                desc: "茶水與補給維護",
+                mission: "負責交流會期間茶水補充。注意：餐盒發放由 3、4 組負責，非本組。", 
+                color: "bg-orange-100 text-orange-800",
+                notes: {
+                    before: ["準備飲料桶、托盤、備用餐盒 (含VIP備用)。", "確認茶水間位置。", "注意：餐盒發放由 3、4 組負責，非本組。"],
+                    during: ["負責交流會期間茶水補充。", "協助回收空餐盒與整理。", "確保 14:30 前餐盒全數到位。"],
+                    after: ["清點回收物資。", "協助垃圾清運。"]
+                }
+            },
+            {
+                id: 2, 
+                name: "動線引導", 
+                leader: "組長 (1人)",
+                count: "4",
+                desc: "1F 門禁管制",
+                mission: "「門神」角色，強制攔截無名牌者，禁止無證人員下 B1。", 
+                color: "bg-yellow-100 text-yellow-800",
+                notes: {
+                    before: ["熟記廁所、飲水機位置。", "架設引導立牌與紅龍動線。"],
+                    during: ["「門神」角色，強制攔截無名牌者，禁止無證人員下 B1。", "14:00 起 B1 入口人流控管，主動解釋流程。", "遇未登記訪客一律請回。"],
+                    after: ["協助引導散場人流。", "收回立牌。"]
+                }
+            },
+            {
+                id: 3, 
+                name: "入口簽到", 
+                leader: "阿寬 (組長), 副組長",
+                count: "8",
+                desc: "人員過濾與識別證分發",
+                mission: "高風險組別 (需 SOP 管控)。1. 媒體：發淺綠名牌+餐盒。2. 捍衛隊/報名者簽到。3. 需配備密錄器應對突發狀況。", 
+                color: "bg-green-100 text-green-800",
+                notes: {
+                    before: ["高風險組別 (需 SOP 管控)，需配備密錄器應對突發狀況。", "準備淺綠名牌、媒體名單、空白名單與名牌。", "簽到桌佈置 (建議兩人一組：一人核對、一人發放)。"],
+                    during: ["媒體：發淺綠名牌+餐盒；捍衛隊/報名者簽到。", "引導媒體快速至後方設備區架腳架。", "14:45 閉門後留守人員處理遲到者。"],
+                    after: ["整理簽到名冊。", "繳回剩餘物資。"]
+                }
+            },
+            {
+                id: 4, 
+                name: "VIP接待", 
+                leader: "小 V, 阿寶",
+                count: "2",
+                desc: "貴賓專屬服務",
+                mission: "發放金黃色名牌與餐盒，維護 VIP 休息室，閉門會議引導。", 
+                color: "bg-teal-100 text-teal-800",
+                notes: {
+                    before: ["準備金黃名牌、VIP名單、貴賓餐盒。", "檢查 VIP 休息室物資與環境。"],
+                    during: ["發放「金黃名牌+餐盒」，引導至休息室。", "14:45 準時引導 VIP 至小會議室。", "分區管理：休息室僅限金黃名牌進入。"],
+                    after: ["協助 VIP 離場。", "整理休息室。"]
+                }
+            },
+            {
+                id: 5, 
+                name: "場控", 
+                leader: "Even (組長), (隱藏: 小 V)",
+                count: "11",
+                desc: "流程與節奏控制",
+                mission: "「節奏大師」。你是現場的紅綠燈，確保人流與流程不打結。", 
+                color: "bg-blue-100 text-blue-800",
+                timeline: [
+                    { time: "14:30 - 15:15", action: "分流入座 (顏色識別)", details: "1. 辨識名牌顏色：金黃 (VIP) 引導至第一排；淺綠 (媒體) 引導至第二排/沙發區。<br>2. 確保走道淨空，不讓人逗留在動線上。" },
+                    { time: "15:15 - 15:45", action: "靜默與專注", details: "1. 記者會開始，舉牌或手勢示意後方安靜。<br>2. 監控麥克風遞送路線 (若有 QA 環節)。<br>3. Even 隨時關注鬼鬼眼神，若需延長或縮短時間，即時打 Pass。" },
+                    { time: "15:45 - 16:00", action: "合照動線 (最亂時刻)", details: "1. 預先佔位：在 QA 結束前 2 分鐘，場控人員需站定位，圍出合照動線。<br>2. 協助引導 VIP 上台站位 (依地貼或事前規劃)。<br>3. 控管合照時間，避免單一組別佔用過久。" },
+                    { time: "16:00 - 18:00", action: "交流引導", details: "1. 宣布交流會開始，引導媒體與嘉賓移動至交流區。<br>2. 協助第 11 組 (護衛) 排除 JK 周邊過度擁擠的人潮。" }
+                ],
+                notes: {
+                    before: ["備註：小黑名義上掛名但實際在 11 組，Even 有問題找小 V。", "確認 Rundown、對講機測試。", "確認座位排次 (第一排 VIP/主協辦，第二排 媒體)。"],
+                    during: ["協助主持人鬼鬼控場，引導合照動線。", "及時調度機動組支援簽到或引導。", "確保依名牌顏色入座。"],
+                    after: ["確認活動結束時間。", "檢討流程。"]
+                }
+            },
+            {
+                id: 6, 
+                name: "設備", 
+                leader: "組長 (1人)",
+                count: "4",
+                desc: "硬體與電力維護",
+                mission: "2/7 需完成測試。重點監控後方媒體區電力與地下室通訊訊號。", 
+                color: "bg-indigo-100 text-indigo-800",
+                notes: {
+                    before: ["2/7 需完成測試。", "重點監控後方媒體區電力與地下室通訊訊號。", "架設音響、投影、電力、網路。"],
+                    during: ["監控電力與網路訊號穩定性。", "協助媒體解決技術問題 (避免跳電)。"],
+                    after: ["撤除所有設備。", "線材收納。"]
+                }
+            },
+            {
+                id: 7, 
+                name: "場佈", 
+                leader: "組長 (1人)",
+                count: "3",
+                desc: "空間規劃與復原",
+                mission: "前一日進場佈置（背板、設備區），活動後撤收，確保逃生動線。", 
+                color: "bg-purple-100 text-purple-800",
+                notes: {
+                    before: ["前一日進場佈置（背板、設備區）。", "確認逃生口暢通與分區告示。", "確保第一排與第二排間距足夠攝影取景。"],
+                    during: ["維持場地整潔 (與清潔組配合)。"],
+                    after: ["活動後撤收，確保逃生動線。", "撤除看板、貼紙，場地復原。"]
+                }
+            },
+            {
+                id: 8, 
+                name: "機動", 
+                leader: "組長, 副組長",
+                count: "約 14-15",
+                desc: "後勤支援與維安",
+                mission: "「人牆」與「補位」。哪裡有漏洞就補哪裡，重點在維安與撤場。", 
+                color: "bg-pink-100 text-pink-800",
+                timeline: [
+                    { time: "14:00 - 14:30", action: "全域部署", details: "1. 支援 1F 門禁：派 3-4 人支援第 2 組，若有未報名者強闖，機動組負責擋人 (當壞人)。<br>2. 協助第 3 組搬運大量餐盒至定位。" },
+                    { time: "14:30 - 15:15", action: "動線維護", details: "1. 站立於 B1 入口與主會場交界處，防止閒雜人等誤入 VIP 休息室。<br>2. 監控捍衛隊/非媒體人員，若有異常行為 (如未經許可直播) 立即回報總召。" },
+                    { time: "15:45 - 16:00", action: "合照人流控管", details: "1. 建立排隊動線：當開放與鬼鬼/嘉賓合照時，機動組需手牽手或拉紅龍製造排隊動線。<br>2. 控制隊伍長度，適時「截斷」隊伍以確保流程準時。" },
+                    { time: "16:00 - 18:00", action: "外圍警戒", details: "1. 在交流會場外圍站崗，觀察是否有可疑人士接近核心人物。<br>2. 隨時待命支援第 9 組 (清潔) 處理突發打翻飲料等狀況。" },
+                    { time: "18:00 - 撤收", action: "重裝撤離", details: "1. 主力部隊：負責搬運桌椅、拆除背板、搬運音響設備。<br>2. 協助第 9 組將大型垃圾袋運出 B1。<br>3. 確認場地完全復原後，最後一批撤離。" }
+                ],
+                notes: {
+                    before: ["人員分配下去支援各組。", "準備無線電、手電筒。", "熟記各區位置，14:00 前至入口待命支援。"],
+                    during: ["支援 1F 門禁，緊急狀況排除。", "隨時支援 11 組 (隔離怪人) 及 2 組 (強制排除)。", "控管現場動線，引導合照人流。"],
+                    after: ["協助撤場搬運。", "最後巡視。"]
+                }
+            },
+            {
+                id: 9, 
+                name: "清潔", 
+                leader: "需指派組長",
+                count: "5",
+                desc: "環境與氣味控管",
+                mission: "「氣味阻絕」與「垃圾清零」。絕不能讓 VIP 或媒體看到垃圾堆積。", 
+                color: "bg-gray-200 text-gray-800",
+                timeline: [
+                    { time: "14:00 - 14:30", action: "戰場掃描", details: "1. 檢查男女廁所衛生紙、洗手乳是否補滿。<br>2. 確認垃圾桶已套好全新垃圾袋。" },
+                    { time: "14:30 - 15:15", action: "熱區巡邏 (用餐高峰)", details: "1. 重點巡視：媒體沙發區、VIP 休息室。<br>2. 主動回收：看到空餐盒主動詢問並收走，避免味道擴散。<br>3. 垃圾不落地：垃圾袋裝滿 7 分即打包運出 B1，不可堆積在角落。" },
+                    { time: "15:15 - 16:00", action: "15分鐘廁所熱點維持", details: "執行「1515 法則」：<br>1. 每 15 分鐘 (15:15, 15:30, 15:45) 派員檢查廁所。<br>2. 清除洗手台水漬、撿拾地上衛生紙、確認無異味。<br>3. 此時活動進行中，外部垃圾量少，主力轉向廁所維護。" },
+                    { time: "16:00 - 18:00", action: "流動清潔", details: "1. 交流會期間，再次加強茶水區與交誼區的空杯/餐盤回收。<br>2. 維持廁所 15 分鐘巡檢頻率。" },
+                    { time: "18:00 - 撤收", action: "終極淨空", details: "1. 將所有垃圾分類打包，清運至指定集散地。<br>2. 確保 B1 恢復原狀，不留任何食物殘渣。" }
+                ],
+                notes: {
+                    before: ["需配置男、女各一負責廁所。", "準備垃圾袋、衛生紙、芳香噴霧。"],
+                    during: ["每 15 分鐘巡視環境、廁所、垃圾桶。", "分段整理用餐區空餐盒，避免堆積。", "留意休息室與沙發區垃圾。"],
+                    after: ["垃圾 (含餐盒殘渣) 清運撤離地下室。", "確保場地氣味與整潔。"]
+                }
+            },
+            {
+                id: 10, 
+                name: "影音", 
+                leader: "Kim (組長)",
+                count: "6",
+                desc: "全程影像捕捉",
+                mission: "拆分為 A、B、C 三個小隊 (各 2 人)，全方位覆蓋。A隊主戰場，B隊側翼，C隊幕後紀錄。", 
+                color: "bg-cyan-100 text-cyan-800",
+                tableHeaders: ["時間軸", "A 隊 (舞台/VIP)", "B 隊 (媒體/花絮)", "C 隊 (工作人員紀錄)"],
+                timeline: [
+                    { time: "14:00 - 14:30", teamA: "拍攝空景、舞台細節", teamB: "拍攝簽到台、伴手禮特寫", teamC: "重點：拍攝第 7 組場佈、第 3 組準備名牌的畫面。" },
+                    { time: "14:30 - 15:15", teamA: "捕捉 VIP 簽到、背板留影", teamB: "捕捉媒體領餐、翻閱新聞稿", teamC: "重點：拍攝第 2 組引導、第 4 組接待 VIP 的視角。" },
+                    { time: "15:15 - 15:45", teamA: "(核心任務) 全程錄影/拍攝鬼鬼主持、貴賓致詞", teamB: "拍攝台下媒體專注聽講、點頭畫面 (B-Roll)", teamC: "拍攝第 5 組場控指揮、第 6 組監控設備的專注神情。" },
+                    { time: "15:45 - 16:00", teamA: "(QA/合照) 引導並拍攝官方大合照 (需確認站位)", teamB: "側拍媒體舉手提問、QA 互動瞬間", teamC: "捕捉第 8 組機動維持秩序、第 11 組護衛 JK 的背影。" },
+                    { time: "16:00 - 18:00", teamA: "拍攝 VIP 與大家交流、專訪畫面", teamB: "自由捕捉現場談笑風生、換名片畫面", teamC: "重點：拍攝第 1 組補茶水、第 9 組清潔收拾的默默付出。" }
+                ],
+                notes: {
+                    before: ["預抓拍攝站位與畫面。", "準備相機、強力補光設備。", "確認 B1 光線並與 6 組確認光源。"],
+                    during: ["紀錄主持人鬼鬼畫面、嘉賓合照及各組工作花絮。", "不干擾動線。"],
+                    after: ["備份檔案。", "器材收納。"]
+                }
+            },
+            {
+                id: 11, 
+                name: "左右護法", 
+                leader: "小黑, 品傑",
+                count: "2",
+                desc: "JK 專屬護衛",
+                mission: "絕對防禦任務。全程貼身保護 JK，不參與任何雜務，不受其他組別指揮。", 
+                color: "bg-slate-200 text-slate-800",
+                notes: {
+                    before: ["確認 JK 動線。", "確認安全周界。"],
+                    during: ["絕對防禦任務：全程視線不離 JK，維持安全周界。", "純護衛職能，不參與任何雜務。", "不受其他組別指揮，若有人靠近由 8 組協助引離。"],
+                    after: ["護送 JK 離場。"]
+                }
+            },
+            {
+                id: 12, 
+                name: "主持與助手", 
+                leader: "可欣 (對接鬼鬼)",
+                count: "2 (含鬼鬼)",
+                desc: "靈魂人物與控場",
+                mission: "鬼鬼負責主持，可欣負責遞物與引導。", 
+                color: "bg-rose-100 text-rose-800",
+                notes: {
+                    before: ["準備主持稿。", "確認合照動線。"],
+                    during: ["鬼鬼負責主持，可欣負責遞物與引導。", "明確引導「請媒體回設備區」或「請 VIP 回首排」。"],
+                    after: ["歸還麥克風。", "休息。"]
+                }
+            }
+        ];
+
+        const rundownData = [
+            { time: "前一天", item: "場地空間佈置", execution: "拍照背板、後方設備區架設、音響測試。", groups: "7.場佈、6.設備", note: "音響設備2/7希望可以測試<br>如有需前一天進場需提出" },
+            { time: "13:00", item: "場地空間佈置", execution: "報到桌、VIP 休息室、媒體沙發區、前二排座位 (VIP/媒體)。", groups: "7.場佈、6.設備、8.機動", note: "如有需前一天進場需提出" },
+            { time: "14:00", item: "全員戰備集合", execution: "1F 哨位啟動。3 組與 4 組完成名牌與餐盒/伴手禮配對、茶水供應，確認休息室物資到位、環境確認。", groups: "0-12 全體工作人員", note: "" },
+            { time: "14:30", item: "報到進場與領餐", execution: "1F 強制攔截：無名牌者禁止下 B1。<br>媒體：簽到並領取「淺綠名牌+餐盒」，引導至媒體沙發區。<br>VIP：簽到並領取「金黃名牌+餐盒」，引導至VIP 休息室。", groups: "2.引導、3.簽到、4.VIP 接待、8.機動", note: "" },
+            { time: "14:45", item: "閉門會議", execution: "VIP、媒體代表、主協辦移往小會議室。休息室與沙發區停止使用。", groups: "12.主持與助手、4.VIP 接待", note: "" },
+            { time: "15:15", item: "記者會正式開始", execution: "主持人鬼鬼開場控場。第一排 (VIP/主協辦)、第二排 (媒體) 依名牌顏色對號入座。", groups: "12.主持與助手、5.場控、6.設備、11.左右護法", note: "" },
+            { time: "15:45", item: "QA 與合照時間", execution: "媒體於後方設備區或座位區提問。安排嘉賓與主持人鬼鬼合照。", groups: "12.主持與助手、10.影音、5.場控", note: "事前需預抓拍攝站位、畫面" },
+            { time: "16:00", item: "交流會正式開始", execution: "全場開放自由交流。已領餐者可進餐。茶水供應補充。", groups: "1.餐飲", note: "需確認報名者、捍衛隊名牌顏色" },
+            { time: "16-18", item: "深度交流會", execution: "護衛組全程貼身保護 JK (不參與雜務)。機動組控管現場動線，引導與鬼鬼之合照人流。", groups: "11.左右護法、8.機動、9.清潔", note: "" },
+            { time: "18:00", item: "場地撤收復原", execution: "撤除所有設備、看板。垃圾 (尤其是餐盒殘渣) 清運撤離地下室。", groups: "8.機動、9.清潔、7.場佈", note: "" },
+            { time: "18:30", item: "活動圓滿結束", execution: "總召確認場地復原情形，全體工作人員解散歸賦。", groups: "0.總召", note: "" }
+        ];
+
+        // Functions
+        function renderGroups() {
+            const container = document.getElementById('groups-container');
+            container.innerHTML = groupsData.map(group => {
+                // Generate notes HTML based on new structure
+                let notesHtml = '';
+                if (group.notes) {
+                    if (group.notes.before && group.notes.before.length > 0) {
+                        notesHtml += `<div class="mb-2"><strong class="text-xs uppercase tracking-wider text-gray-500 block mb-1">會前 (Before)</strong><ul class="list-disc list-inside text-sm text-gray-600 space-y-1">${group.notes.before.map(n => `<li>${n}</li>`).join('')}</ul></div>`;
+                    }
+                    if (group.notes.during && group.notes.during.length > 0) {
+                        notesHtml += `<div class="mb-2"><strong class="text-xs uppercase tracking-wider text-gray-500 block mb-1">會中 (During)</strong><ul class="list-disc list-inside text-sm text-gray-600 space-y-1">${group.notes.during.map(n => `<li>${n}</li>`).join('')}</ul></div>`;
+                    }
+                    if (group.notes.after && group.notes.after.length > 0) {
+                        notesHtml += `<div><strong class="text-xs uppercase tracking-wider text-gray-500 block mb-1">會後 (After)</strong><ul class="list-disc list-inside text-sm text-gray-600 space-y-1">${group.notes.after.map(n => `<li>${n}</li>`).join('')}</ul></div>`;
+                    }
+                }
+
+                return `
+                <div onclick="openGroupModal(${group.id})" class="cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6 border-l-4 border-l-accent relative overflow-hidden flex flex-col h-full group">
+                    <div class="absolute top-0 right-0 p-2 opacity-10 font-bold text-6xl select-none group-hover:opacity-20 transition-opacity">${group.id}</div>
+                    <div class="flex items-center mb-2 relative z-10">
+                        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full ${group.color} font-bold mr-3 text-lg shrink-0">
+                            ${group.id}
+                        </span>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800">${group.name}</h3>
+                            ${group.leader ? `<div class="text-xs text-gray-500 font-semibold">Leader: ${group.leader} ${group.count ? `<span class="ml-1 px-1.5 py-0.5 bg-gray-100 rounded-full text-gray-600">${group.count}人</span>` : ''}</div>` : ''}
+                        </div>
+                    </div>
+                    <p class="text-gray-600 relative z-10 mb-4 font-medium text-sm">${group.desc}</p>
+                    
+                    ${notesHtml ? `
+                    <div class="mt-auto pt-4 border-t border-gray-100 relative z-10">
+                        ${notesHtml}
+                    </div>
+                    ` : ''}
+                </div>
+            `}).join('');
+        }
+
+        function openGroupModal(id) {
+            const group = groupsData.find(g => g.id === id);
+            if (!group) return;
+
+            const modal = document.getElementById('group-modal');
+            const content = document.getElementById('modal-content');
+            
+            // Determine table headers
+            const headers = group.tableHeaders || ["時間軸 (Timeline)", "戰術動作 (Tactical Action)", "執行細節 (Execution Details)"];
+            
+            // Generate Timeline Rows
+            let timelineHtml = '';
+            if (group.timeline) {
+                timelineHtml = group.timeline.map(item => {
+                    // Check if it's a special 4-column structure (Group 10)
+                    if (item.teamA) {
+                        return `
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-4 font-bold text-gray-700 whitespace-nowrap">${item.time}</td>
+                            <td class="p-4 text-sm text-gray-600">${item.teamA}</td>
+                            <td class="p-4 text-sm text-gray-600">${item.teamB}</td>
+                            <td class="p-4 text-sm text-gray-600">${item.teamC}</td>
+                        </tr>`;
+                    } else {
+                        return `
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-4 font-bold text-gray-700 whitespace-nowrap w-32">${item.time}</td>
+                            <td class="p-4 font-semibold text-gray-800 w-48">${item.action}</td>
+                            <td class="p-4 text-sm text-gray-600 leading-relaxed">${item.details}</td>
+                        </tr>`;
+                    }
+                }).join('');
+            } else {
+                // Fallback: Generate timeline from notes if no specific timeline exists
+                if (group.notes) {
+                     const fallbackTimeline = [];
+                     if (group.notes.before) fallbackTimeline.push({time: "會前 (Before)", action: "準備與檢查", details: group.notes.before.join('<br>')});
+                     if (group.notes.during) fallbackTimeline.push({time: "會中 (During)", action: "執行任務", details: group.notes.during.join('<br>')});
+                     if (group.notes.after) fallbackTimeline.push({time: "會後 (After)", action: "撤收與復原", details: group.notes.after.join('<br>')});
+                     
+                     timelineHtml = fallbackTimeline.map(item => `
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-4 font-bold text-gray-700 whitespace-nowrap w-32">${item.time}</td>
+                            <td class="p-4 font-semibold text-gray-800 w-48">${item.action}</td>
+                            <td class="p-4 text-sm text-gray-600 leading-relaxed">${item.details}</td>
+                        </tr>`).join('');
+                } else {
+                    timelineHtml = `<tr><td colspan="3" class="p-4 text-center text-gray-500">暫無詳細時間軸資料</td></tr>`;
+                }
+            }
+
+            // Generate Table Header HTML
+            const tableHeaderHtml = headers.map(h => `<th class="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50">${h}</th>`).join('');
+
+            content.innerHTML = `
+                <div class="relative">
+                    <button onclick="closeGroupModal()" class="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                    
+                    <div class="p-8">
+                        <div class="flex items-center mb-6">
+                            <span class="inline-flex items-center justify-center w-16 h-16 rounded-full ${group.color} font-bold mr-5 text-3xl shadow-sm shrink-0">
+                                ${group.id}
+                            </span>
+                            <div>
+                                <h2 class="text-3xl font-bold text-gray-900 mb-1">第 ${group.id} 組：${group.name} (${group.desc})</h2>
+                                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                    <span class="flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg> 指揮官：${group.leader || '待定'}</span>
+                                    <span class="flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg> 編制：${group.count || '未定'} 人</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-8 rounded-r-lg">
+                            <p class="font-bold text-blue-900 mb-1">🎯 核心指令 (Core Mission)</p>
+                            <p class="text-blue-800">${group.mission || group.desc}</p>
+                        </div>
+
+                        <div class="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr>
+                                        ${tableHeaderHtml}
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white">
+                                    ${timelineHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            // Trigger reflow
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            content.classList.remove('scale-95', 'opacity-0');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeGroupModal() {
+            const modal = document.getElementById('group-modal');
+            const content = document.getElementById('modal-content');
+            
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        function renderRundown() {
+            const container = document.getElementById('rundown-container');
+            container.innerHTML = rundownData.map((row, index) => `
+                <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-accent">${row.time}</td>
+                    <td class="px-6 py-4 text-sm font-semibold text-gray-900">${row.item}</td>
+                    <td class="px-6 py-4 text-sm text-gray-700 leading-relaxed">${row.execution}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">
+                        <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-1">
+                            ${row.groups}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500 italic">${row.note}</td>
+                </tr>
+            `).join('');
+        }
+
+        function switchTab(tabName) {
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Show selected content
+            document.getElementById(`content-${tabName}`).classList.add('active');
+            
+            // Update Tab Styles
+            const tabs = ['groups', 'rundown'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tabName) {
+                    btn.classList.add('text-accent', 'border-accent');
+                    btn.classList.remove('text-gray-500', 'border-transparent');
+                } else {
+                    btn.classList.remove('text-accent', 'border-accent');
+                    btn.classList.add('text-gray-500', 'border-transparent');
+                }
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderGroups();
+            renderRundown();
+        });
+
+    </script>
+</body>
+</html>
