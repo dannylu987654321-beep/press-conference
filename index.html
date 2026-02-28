@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>記者發布會專案管理</title>
+    <title>記者發布會專案管理（彩排測試版）</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -39,7 +39,8 @@
     <!-- Header -->
     <header class="bg-primary text-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 py-3 md:py-4 flex justify-between items-center">
-            <h1 class="text-lg md:text-2xl font-bold tracking-wide">📅 記者發布會專案</h1>
+            <h1 class="text-lg md:text-2xl font-bold tracking-wide">📅 記者發布會專案管理<span
+                    class="text-sm font-normal opacity-70 ml-2">（彩排測試版）</span></h1>
             <div class="text-xs md:text-sm opacity-80">2026 年度</div>
         </div>
     </header>
@@ -85,6 +86,10 @@
                 class="px-4 md:px-6 py-2 md:py-3 text-base md:text-lg font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300 transition-colors focus:outline-none whitespace-nowrap">
                 ⏱️ 流程表
             </button>
+            <button onclick="switchTab('agenda')" id="tab-agenda"
+                class="px-4 md:px-6 py-2 md:py-3 text-base md:text-lg font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300 transition-colors focus:outline-none whitespace-nowrap">
+                🎙️ 記者會時程
+            </button>
         </div>
 
         <!-- Groups Content -->
@@ -119,6 +124,37 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200" id="rundown-container">
                         <!-- Rundown rows will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Agenda Content -->
+        <div id="content-agenda" class="tab-content animate-fade-in">
+            <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 mb-6 border border-gray-100">
+                <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-1">🎙️ 記者會進行時程</h2>
+                <p class="text-sm text-gray-500">15:15 開始，共 60 分鐘</p>
+            </div>
+            <div class="overflow-x-auto bg-white rounded-lg shadow">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th
+                                class="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                時間(分)</th>
+                            <th
+                                class="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                項目</th>
+                            <th
+                                class="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider hidden md:table-cell">
+                                詳細說明</th>
+                            <th
+                                class="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                長度</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="agenda-container">
+                        <!-- Agenda rows will be injected here -->
                     </tbody>
                 </table>
             </div>
@@ -170,8 +206,8 @@
                 mission: "「補水、擦乾」。照顧茶水間與交流區的液體供應。",
                 color: "bg-orange-100 text-orange-800",
                 timeline: [
-                    { time: "14:30 - 16:00", action: "待命巡檢", details: "1. 每 20 分鐘檢查茶桶水量、餅乾量。<br>2. 眼觀四面：看到空杯主動收走，維持桌面空間。<br>3. 迎賓巡迴 (14:45)：主動端茶水/咖啡至媒體沙發區詢問需求，展現服務熱忱。" },
-                    { time: "16:00 - 18:00", action: "主動巡視", details: "1. 眼觀四面：看到空杯主動收走，維持桌面空間。<br>2. 手拿抹布：發現水漬需在 30 秒內擦乾，保護資料與衣物。<br>3. 動態補給：觀察茶點盤，剩餘過少即進行併盤或補貨，維持豐盛感。" }
+                    { time: "14:30 - 16:00", action: "待命巡檢", details: "1. 每 20 分鐘檢查茶桶水量、餅乾量。<br>2. 眼觀四面：看到空杯主動收走，維持桌面空間。" },
+                    { time: "16:00 - 18:00", action: "交流期（現場模式）", details: "1. 眼觀四面：看到空杯主動收走，維持桌面空間。<br>2. 手拿抹布：發現水漬需在 30 秒內擦乾，保護資料與衣物。<br>3. 動態補給：觀察茶點盤，剩餘過少即進行併盤或補貨，維持豐盛感。" }
                 ],
                 notes: {
                     before: ["人員分工：茶水巡視(2人)、環境巡視(4人)。", "準備飲料桶、托盤、備用餐盒 (含VIP備用)。", "確認茶水間位置。", "注意：餐盒發放由 3、4 組負責，非本組。"],
@@ -182,19 +218,22 @@
             {
                 id: 2,
                 name: "動線引導",
-                leader: "仁佑",
-                count: "4",
-                desc: "1F 門禁管制 (關鍵字：門神、過濾)",
+                leader: "佑騰 (組長), 仁佑 (副組長)",
+                count: "4 人 (目前：佑勝、仁佑、士欣)",
+                desc: "「門神、過濾」守住 1F 門戶，確保所有下樓者皆已完成身分核對。",
                 mission: "1F 入口第一道防線，無名牌/未報名者絕不下樓。",
                 color: "bg-yellow-100 text-yellow-800",
                 timeline: [
-                    { time: "13:30 - 14:30", action: "站位", details: "站定位於 1F 入口及通往 B1 的梯廳。" },
-                    { time: "14:30 - 16:00", action: "執行", details: "1. 詢問：「您好，請問是媒體、貴賓還是報名參加者？」<br>2. 引導：「請先至簽到桌報到。」<br>3. 攔截：若對方說是「路過」，微笑拒絕；若硬闖，呼叫機動組。<br>4. 識別：無名牌者一律攔下。" }
+                    { time: "13:00", action: "場地布置", details: "1. 張貼告示牌。<br><em class='text-gray-400 text-xs'>備註：當天衣著黑衣上衣＋牛仔褲（藍色系列）</em>" },
+                    { time: "14:00 - 14:30", action: "全域佈防", details: "1. 分別站定位於 1F 入口處及通往 B1 的樓廳前方，引導媒體時至少要有 1 人留守門口。<br>2. 1F 入口（入口門神 — 千惠、彥春）；（阻攔人員：仁佑、士欣）<br>3. 引導媒體人員：佑騰、機動支援" },
+                    { time: "14:30 - 16:00", action: "門禁執行", details: "1. 主動詢問：「您好，請問是媒體、貴賓還是報名參加者？」<br>2. 精準引導：請所有人員先至簽到桌報到。<br>3. 攔截與通報：攔截無名者，若有強闖狀況立刻呼叫第 8 組支援。<br>4. 15:55 分（機動組千惠、彥春）可離開，由仁佑、士欣當入口門神。<br>5. 不需要引導到 B1，確保下樓者皆已完成身分核對才能放行。<br><em class='text-gray-400 text-xs'>疑點：告示牌內容多大？2 份數「貴賓邀請函」｜粉紅：YT 打問畫面（不截圖）</em>" },
+                    { time: "16:00 - 18:00", action: "門禁持續", details: "會有部分人員到 1F 交流，所以引導組仍然留守。<br><em class='text-gray-400 text-xs'>備註：16:00 進場人員較多，可能需要 1 人支援</em>" },
+                    { time: "18:00", action: "場地復原", details: "協助收回告示牌與相關器材。" }
                 ],
                 notes: {
-                    before: ["熟記廁所、飲水機位置。", "架設引導立牌與紅龍動線。"],
-                    during: ["「門神」角色，強制攔截無名牌者，禁止無證人員下 B1。", "13:30 起 B1 入口人流控管，主動解釋流程。", "遇未登記訪客一律請回。"],
-                    after: ["協助引導散場人流。", "收回立牌。"]
+                    before: ["熟記廁所、飲水機位置。", "張貼告示牌。", "服裝：黑衣上衣＋牛仔褲（藍色系列）。"],
+                    during: ["「門神」角色，確保所有下樓者皆已完成身分核對。", "14:00 全域佈防；14:30 門禁執行。", "遇未登記訪客一律請回，強闖者呼叫機動組。"],
+                    after: ["協助引導散場人流。", "收回告示牌。"]
                 }
             },
             {
@@ -202,17 +241,23 @@
                 name: "入口簽到",
                 leader: "阿寬 (組長), 舜傑 (副組長)",
                 count: "8",
-                desc: "核心原則：核對身分、發放物資、快速分流。",
-                mission: "身分核對 -> 給物資 -> 指引方向。嚴禁在此處聊天拖延。",
+                desc: "核心原則：核對身分、發放物資、快速分流。<br><span class='text-xs font-normal'>機動協辦：阿寶、舞偉 ｜ 檯台：小薇、易達 ｜ 狀況協辦甲：靄璐、珮程 ｜ 狀況協辦乙：微健、湘文 ｜ 引導組：仁佑、士欣、佑騰 ｜ 機動組：千惠、彥春</span>",
+                mission: "身分核對 → 給物資 → 指引方向。嚴禁在此處聊天拖延。",
                 color: "bg-green-100 text-green-800",
                 timeline: [
-                    { time: "全程執行", action: "核對與發放 (目標 < 30s)", details: "1. 詢問大名或單位。<br>2. 核對名單並打勾。<br>3. 依身份給予名牌與餐盒 (媒體綠色、VIP 金黃色、其餘對應顏色)。<br>4. 指引：告知對應休息區/座位區方向。" },
-                    { time: "異常處理", action: "排除卡關", details: "1. 若名單找不到名字，請人員移至旁邊稍等，立刻呼叫總召或第 8 組。<br>2. 嚴禁聊天：不在此處與熟人寒暄，避免隊伍回堵。" }
+                    { time: "13:00", action: "場地布置", details: "布置好桌子、簽名表、名牌。<br>A 組：協助餐盒和伴手禮放置取拿位置。<br>B 組：確認簽到名冊，拿毛筆。<br>引導組：貼好告示牌。各自定位。<br><em class='text-xs text-gray-400'>餐盒和伴手禮放 B1 嗎？（由機動組搬運到就位點再交給對方）</em>" },
+                    { time: "14:00", action: "全員備戰集合", details: "完成媒體淺綠名牌與餐盒/伴手禮配對。<br>入場和簽到要告知所有來賓：[15:15 有閉幕儀式，入場請保持安靜]<br>確認簽分 — 依雲/湘文 ｜ 各個和發名牌 — 小薇/易達 ｜ 確認在場影音 — 靄璐/珮程" },
+                    { time: "14:30", action: "報到進場與領餐", details: "媒體出示記者證或工作證（有名單確認，2/25 前組長會要到）。<br>完成媒體簽名程序後，由引導組引導媒體前往沙發區。<br>有多位人或特殊情況疏通頓帶旁邊處理。<br>B1 機動組發放餐盒，發放完要記已領取。<br><em class='text-xs text-gray-400'>疑問：名牌需要 2 份（簽名和身分確認各一）</em>" },
+                    { time: "14:45", action: "閉門會議", details: "留守人員處理遲到者。" },
+                    { time: "15:15", action: "記者會正式開始", details: "待命，準備記者會後任務。" },
+                    { time: "16:00", action: "交流會開始（貴賓/報名者）", details: "1F 入口門神換引導組接手。<br>確認身分 — 依雲/湘文 ｜ 簽名發名牌 — 小薇/易達 ｜ 狀況處理 — 靄璐/珮程 ｜ 伴手禮發放區 — 彥春/千惠<br>貴賓：簽到並領取粉紅名牌，引導至對應區域。<br>報名者：確認名單後發名牌，禁止截圖。<br>若有無身分者，帶至旁邊疏通處理。" },
+                    { time: "16:00 - 18:00", action: "媒體離場兌換伴手禮", details: "媒體離場時以名牌換伴手禮。<br><em class='text-xs text-gray-400'>是否回收名牌？</em>" },
+                    { time: "18:00", action: "場地撤收復原", details: "確保物品集中管理，上樓前負責回收。" }
                 ],
                 notes: {
-                    before: ["高風險組別 (需 SOP 管控)，需配備密錄器應對突發狀況。", "準備淺綠名牌、媒體名單、空白名單與名牌。", "簽到桌佈置 (建議兩人一組：一人核對、一人發放)。"],
-                    during: ["媒體：發淺綠名牌+餐盒；捍衛隊/報名者簽到。", "引導媒體快速至後方設備區架腳架。", "14:45 閉門後留守人員處理遲到者。"],
-                    after: ["整理簽到名冊。", "繳回剩餘物資。"]
+                    before: ["高風險組別 (需 SOP 管控)，需配備密錄器應對突發狀況。", "準備各色名牌、媒體名單、空白名單。", "簽到桌佈置：A 組（餐盒/伴手禮）、B 組（名冊/毛筆）、引導組（告示牌）。"],
+                    during: ["媒體：發淺綠名牌，引導至沙發區。", "貴賓/報名者：16:00 後進場，依身分發牌。", "14:45 閉門後留守人員處理遲到者。"],
+                    after: ["整理簽到名冊。", "伴手禮兌換收尾。", "繳回剩餘物資。"]
                 }
             },
             {
@@ -241,15 +286,21 @@
                 desc: "流程與節奏控制 (關鍵字：節奏大師)",
                 mission: "「節奏大師」。你是現場的紅綠燈，確保人流與流程不打結。",
                 color: "bg-blue-100 text-blue-800",
+                tableHeaders: ["開始時間", "負責人", "任務內容", "位置/備註"],
                 timeline: [
-                    { time: "14:30 - 15:15", action: "分流入座 (顏色識別)", details: "1. 辨識名牌顏色：金黃 (VIP) 引導至第一排；淺綠 (媒體) 引導至第二排/沙發區。<br>2. 確保走道淨空，不讓人逗留在動線上。<br>3. 支援前線：若入口處壅塞，主動指派 3-4 人支援第 2 組引導分流。" },
-                    { time: "15:15 - 15:45", action: "專注 (派一個人協助)", details: "1. 記者會開始，舉牌或手勢示意後方安靜。<br>2. 監控麥克風遞送路線 (若有 QA 環節)。<br>3. Even 隨時關注鬼鬼眼神，若需延長或縮短時間，即時打 Pass。" },
-                    { time: "15:45 - 16:00", action: "合照動線 (最亂時刻)", details: "1. 預先佔位：在 QA 結束前 2 分鐘，場控人員與機動組需站定位，圍出「ㄇ字型」合照動線。<br>2. 協助引導 VIP 上台站位 (依地貼或事前規劃)。<br>3. 控管合照時間，避免單一組別佔用過久。" },
-                    { time: "16:00 - 18:00", action: "交流引導", details: "1. 宣布交流會開始，引導媒體與嘉賓移動至交流區。<br>2. 協助第 11 組 (護衛) 排除 JK 周邊過度擁擠的人潮。" }
+                    { time: "13:00", teamA: "承旭", teamB: "1. 跟設備組確認當天麥克風數量（目標 6 支，至少 5 支）。<br>2. 于活動前一天聯絡設備組組長，請其協助測試所有麥克風狀況與電量。<br>3. 在群組回報麥克風數量及設備測試狀況。", teamC: "/" },
+                    { time: "14:30", teamA: "RADY / 彥博", teamB: "1. 提醒引導組問。<br>2. 注意入場人員狀況，處理突發事件（有問題聯絡 Even）<br>&nbsp;&nbsp;a. 辨識名牌顏色：金黃（VIP）→ 第一排；淺綠（媒體）→ 第二排/沙發區。<br>&nbsp;&nbsp;b. 確保走道淨空，不讓人逗留在動線上。<br>3. 遇 VIP 人員，請其原地稍等並聯絡資深前來接待。<br><em class='text-xs text-gray-400'>分工：有狀況時，彥博留原地，RADY 去求援後速回。RADY 有不清楚先問彥博。</em>", teamC: "樓梯下方簽到處" },
+                    { time: "14:30", teamA: "威霖", teamB: "全程協助可欣，目標是儘可能不能離開鬼鬼。處理可欣辦的一切需求。", teamC: "休息區與舞台區中間" },
+                    { time: "15:15", teamA: "漢文", teamB: "倒數計時提醒：在指定節點向主持人（鬼鬼、可欣）舉牌提示剩餘時間。<br><br>・15:15–15:20 鬼鬼開場 5m（1min 提醒，時間到提醒）<br>・15:20–15:25 協會報告 5m（1min 提醒，時間到提醒）<br>・15:25–15:28 EVOL 報告 3m（1min 提醒，時間到提醒）<br>・15:28–15:31 建設報告 3m（1min 提醒，時間到提醒）<br>・15:31–15:34 滋和堂報告 3m（1min 提醒，時間到提醒）<br>・15:34–15:40 第三家報告 6m（3min→1min→時間到）<br>・15:40–15:55 全體 QA 15m（3min→1min→時間到）<br><br><em class='text-xs text-gray-400'>前置：製作 3 張 A3 提示牌（3min；1min；時間到），數字需佔滿版面。3/3 前製作完畢並拍照至群組。</em>", teamC: "吧台後方" },
+                    { time: "15:40", teamA: "承旭 / 許小鵑 / Lin", teamB: "QA 環節：負責遞麥克風及示意大家保持安靜。<br>承旭和 Lin，當天需確認設備組組長位置，若麥克風出狀況立刻聯繫處理。", teamC: "承旭：右一<br>許小鵑：右二<br>Lin：左一" },
+                    { time: "15:55", teamA: "承旭", teamB: "收納所有麥克風歸位。", teamC: "" },
+                    { time: "15:55", teamA: "Lin / 許小鵑 / 威霖", teamB: "記者會後任務 1：引導媒體收設備，並帶領至休息區。注意是否有人接近或干擾媒體收設備。", teamC: "" },
+                    { time: "15:55", teamA: "彥博 / 漢文 / RADY", teamB: "記者會後任務 2：引導記者與媒體朋友們至休息室入座。", teamC: "" },
+                    { time: "16:00", teamA: "全體場控", teamB: "1. 宣布交流會開始，引導媒體與嘉賓移動至交流區。<br>2. 協助第 11 組（護衛）排除 JK 周邊過度擁擠的人潮。", teamC: "" }
                 ],
                 notes: {
-                    before: ["備註：小黑名義上掛名但實際在 11 組，Even 有問題找小 V。", "確認 Rundown、對講機測試。", "確認座位排次 (第一排 VIP/主協辦，第二排 媒體)。"],
-                    during: ["協助主持人鬼鬼控場，引導合照動線。", "及時調度機動組支援簽到或引導。", "確保依名牌顏色入座。"],
+                    before: ["承旭 13:00 確認並回報麥克風數量。", "漢文製作 3 張 A3 倒數提示牌（3/3 前完成）。", "確認 Rundown、對講機測試。", "確認座位排次（第一排 VIP/主協辦，第二排 媒體）。"],
+                    during: ["漢文：倒數計時提示（吧台後方）。", "RADY/彥博：分流入座（樓梯下方）。", "威霖：全程協助可欣。", "承旭/許小鵑/Lin：QA 遞麥克風。"],
                     after: ["確認活動結束時間。", "檢討流程。"]
                 }
             },
@@ -262,13 +313,12 @@
                 mission: "確保後方媒體區電力穩定，地下室訊號暢通。",
                 color: "bg-indigo-100 text-indigo-800",
                 timeline: [
-                    { time: "13:00 - 14:00", action: "測試", details: "1. 測試麥克風音量、音響連線。<br>2. 確認媒體區延長線已過電。" },
-                    { time: "14:30 - 15:00", action: "網路救援", details: "1. 主動確認每位媒體都連得上網路，並提供 QR Code 立牌。<br>2. 監控電力負載。" },
-                    { time: "15:00 - 16:00", action: "監控", details: "1. 定點待命：站在音控桌或後方媒體區。<br>2. 救援：提供備用延長線或 Wi-Fi。<br>3. 禁忌：嚴禁離開崗位。" }
+                    { time: "13:00 - 14:00", action: "硬體測試", details: "1. 進行麥克風音量、音響連線最終測試。<br>2. 檢查後方媒體延長線是否已通電。" },
+                    { time: "15:00 - 16:00", action: "現場監控", details: "1. 定點待命：守在音控桌或媒體區。<br>2. 緊急救援：若媒體反應電力或訊號異常，立刻提供備用延長線或分享器支援。" }
                 ],
                 notes: {
-                    before: ["2/7 需完成測試。", "重點監控後方媒體區電力與地下室通訊訊號。", "架設音響、投影、電力、網路。"],
-                    during: ["監控電力與網路訊號穩定性。", "協助媒體解決技術問題 (避免跳電)。"],
+                    before: ["重點監控後方媒體區電力與地下室通訊訊號。", "架設音響、投影、電力、網路。"],
+                    during: ["監控電力與網路訊號穩定性。", "緊急救援：提供備用延長線或分享器。"],
                     after: ["撤除所有設備。", "線材收納。"]
                 }
             },
@@ -282,7 +332,7 @@
                 color: "bg-purple-100 text-purple-800",
                 timeline: [
                     { time: "前置作業", action: "安全檢核", details: "1. 防絆倒：確保地上所有電線均已用膠帶黏貼牢固。<br>2. 穩固度：檢查背板、立牌是否加重固定。<br>3. 逃生檢查：確保所有逃生出入口暢通無阻。" },
-                    { time: "18:00 - 撤收", action: "空間復原", details: "1. 分類清運：設備歸位、垃圾打包。<br>2. 場地復原：協助第 9 組搬運動物，確保 B1 恢復至初始狀態。" }
+                    { time: "18:00 - 撤收", action: "空間復原", details: "1. 分類清運：設備歸位、垃圾打包。<br>2. 場地復原：協助第 9 組搬運物品，確保 B1 恢復至初始狀態。" }
                 ],
                 notes: {
                     before: ["前一日進場佈置（背板、設備區）。", "確認逃生口暢通與分區告示。", "確保第一排與第二排間距足夠攝影取景。"],
@@ -293,64 +343,66 @@
             {
                 id: 8,
                 name: "機動",
-                leader: "Kevin (組長)",
-                count: "約 14-15 人 (最強後勤)",
-                desc: "後勤支援與維安 (關鍵字：人牆、補位)",
+                leader: "Kevin (組長)<br>SEAN (樓上副組長) ／ VINCENT (樓下副組長)",
+                count: "約 14-18 人",
+                desc: "後勤支援與維安（人牆、補位）<br><span class='text-xs font-normal text-gray-500'>🏷️ 識別：組長黃貼紙 3 條｜副組長 2 條｜組員 1 條</span>",
                 mission: "「人牆」與「補位」。哪裡有漏洞就補哪裡，重點在維安與撤場。",
                 color: "bg-pink-100 text-pink-800",
                 timeline: [
-                    { time: "13:30 - 14:30", action: "部署", details: "1. 支援 1F 門禁：派人支援第 2 組，若有未報名者強闖，機動組負責擋人。<br>2. 搬運工：隨時將後方堆積的餐盒補給至簽到桌後方，確保第 3 組伸手就能拿到。" },
+                    { time: "14:00 - 15:00", action: "全域前置", details: "1. 支援 1F 門禁：派人支援第 2 組，若有未報名者強闖，機動組負責直接擋人。<br>2. 協助第 3 組搬運大量餐盒至定位。" },
                     { time: "14:30 - 15:15", action: "動線維護", details: "1. 站立於 B1 入口與主會場交界處，防止閒雜人等誤入 VIP 休息室。<br>2. 監控捍衛隊/非媒體人員，若有異常行為立即回報總召。" },
-                    { time: "15:45 - 16:00", action: "合照人流控管", details: "1. 建立排隊動線：當開放與鬼鬼/嘉賓合照時，機動組需手牽手或拉紅龍製造排隊動線。<br>2. 控制隊伍長度，適時「截斷」隊伍以確保流程準時。" },
-                    { time: "16:00 - 18:00", action: "外圍警戒", details: "1. 在交流會場外圍站崗，觀察是否有可疑人士接近核心人物。<br>2. 隨時待命支援第 9 組 (清潔) 處理突發打翻飲料等狀況。" },
-                    { time: "18:00 - 撤收", action: "撤離", details: "1. 主力部隊：負責搬運桌椅、拆除背板、搬運音響設備。<br>2. 協助第 9 組將大型垃圾袋運出 B1。<br>3. 確認場地完全復原後，最後一批撤離。" }
+                    { time: "15:45 - 16:00", action: "合照人流控管", details: "1. 建立排隊動線：當開放鬼鬼/嘉賓合照時，機動組需手牽手或拉紅龍製造排隊動線。<br>2. 控制隊伍長度，遇時「截斷」隊伍以確保流程準時。" },
+                    { time: "16:00 - 18:00", action: "外圍警戒", details: "1. 在交流會場外圍站崗，觀察是否有可疑人士接近核心人物。<br>2. 隨時待命支援第 9 組（清潔）處理突發打翻飲料等狀況。" },
+                    { time: "18:00 - 撤收", action: "撤離", details: "1. 主力部隊：負責搬運桌椅、折除背板、搬運音響設備。<br>2. 協助第 9 組將大型垃圾袋運出 B1。<br>3. 確認場地完全復原後，最後一批撤離。" }
                 ],
                 notes: {
-                    before: ["人員分配下去支援各組。", "準備無線電、手電筒。", "熟記各區位置，14:00 前至入口待命支援。"],
-                    during: ["支援 1F 門禁，緊急狀況排除。", "隨時支援 11 組 (隔離怪人) 及 2 組 (強制排除)。", "控管現場動線，引導合照人流。"],
-                    after: ["協助撤場搬運。", "最後巡視。"]
+                    before: ["已分配固定支援組與特殊勤務分組。", "識別：組長黃貼紙3條，副組長2條，組員1條。", "14:00 前至入口待命支援。"],
+                    during: ["支援 1F 門禁，緊急狀況排除。", "控管現場動線，引導合照人流。", "外圍警戒，保護核心人物。"],
+                    after: ["協助撤場搬運。", "最後巡視確認復原。"]
                 }
             },
             {
                 id: 9,
                 name: "清潔",
-                leader: "西瓜 (組長)",
-                count: "5 人 (需含 1 男 1 女專責廁所)",
+                leader: "阿傑 (組長)",
+                count: "4+1 人（女廁部分借調場控組協助）",
                 desc: "環境與氣味控管 (關鍵字：氣味阻絕、垃圾清零)",
                 mission: "「氣味阻絕」與「垃圾清零」。絕不能讓 VIP 或媒體看到垃圾堆積。",
                 color: "bg-gray-200 text-gray-800",
                 timeline: [
-                    { time: "13:30 - 14:30", action: "會場檢視", details: "1. 檢查男女廁所衛生紙、洗手乳是否補滿。<br>2. 確認垃圾桶已套好全新垃圾袋。" },
-                    { time: "14:30 - 15:15", action: "熱區巡邏 (用餐高峰)", details: "1. 重點巡視：媒體沙發區、VIP 休息室。<br>2. 主動回收：看到空餐盒主動詢問並收走，避免味道擴散。<br>3. 垃圾不落地：垃圾袋裝滿 7 分即打包運出 B1，不可堆積在角落。" },
-                    { time: "15:15 - 16:00", action: "15 分鐘廁所熱點維持", details: "執行「1515 法則」：<br>1. 每 15 分鐘 (15:15, 15:30, 15:45) 派員檢查廁所。<br>2. 清除洗手台水漬、撿拾地上衛生紙、確認無異味。<br>3. 此時活動進行中，外部垃圾量少，主力轉向廁所維護。" },
+                    { time: "14:00 - 14:30", action: "戰場掃描", details: "1. 檢查男女廁所衛生紙、洗手乳是否補滿。<br>2. 確認垃圾桶已賽好全新垃圾袋。" },
+                    { time: "14:30 - 15:15", action: "熱區巡邏（用餐高峰）", details: "1. 重點巡視：媒體沙發區、VIP 休息室。<br>2. 主動回收：看到空餐盒主動詢問並收走，避免氣味擴散。<br>3. 垃圾不落地：垃圾袋裝滿 7 分打包運出 B1，不堆積在角落。" },
+                    { time: "15:00 各廁", action: "15 分鐘廁所熱點維持", details: "執行「1515 法則」：<br>1. 每 15 分鐘派員檢查廁所。<br>2. 清除洗手台水漬、撿拾地上衛生紙、確認無異味。<br>3. 此時活動進行中，外部垃圾量少，主力轉向廁所維護。" },
                     { time: "16:00 - 18:00", action: "流動清潔", details: "1. 交流會期間，再次加強茶水區與交誼區的空杯/餐盤回收。<br>2. 維持廁所 15 分鐘巡檢頻率。" },
-                    { time: "18:00 - 撤收", action: "淨空", details: "1. 將所有垃圾分類打包，清運至指定集散地。<br>2. 確保 B1 恢復原狀，不留任何食物殘渣。" }
+                    { time: "18:00 - 撤收", action: "終極淨空", details: "1. 將所有垃圾分類打包，清運至指定集散地。<br>2. 確保 B1 恢復原狀，不留任何食物殘渣。" }
                 ],
                 notes: {
                     before: ["需配置男、女各一負責廁所。", "準備垃圾袋、衛生紙、芳香噴霧。"],
                     during: ["每 15 分鐘巡視環境、廁所、垃圾桶。", "分段整理用餐區空餐盒，避免堆積。", "留意休息室與沙發區垃圾。"],
-                    after: ["垃圾 (含餐盒殘渣) 清運撤離地下室。", "確保場地氣味與整潔。"]
+                    after: ["垃圾（含餐盒殘渣）清運撤離地下室。", "確保場地氣味與整潔。"]
                 }
             },
             {
                 id: 10,
                 name: "影音紀錄",
-                leader: "kim (組長)",
-                count: "6 人 (拆分為 A、B、C 三個小隊，各 2 人)",
-                desc: "全程影像捕捉 (包含活動紀錄/手機)",
-                mission: "拆分為 A、B、C 三個小隊 (各 2 人)，全方位覆蓋。A 隊主戰場，B 隊側翼，C 隊幕後紀錄。",
+                leader: "Kim (組長)",
+                count: "4 人",
+                desc: "全程影像捕捉<br><span class='text-xs font-normal text-gray-600'>A：活動紀錄拍照(手機) — 園珍、玻糖<br>B：活動紀錄錄影(相機) — Ian<br>C：舞台拍照、側錄 — Kim</span>",
+                mission: "A 隊手機拍照紀錄花絮，B 隊相機全程錄影，C 隊舞台側錄與大合照。",
                 color: "bg-cyan-100 text-cyan-800",
-                tableHeaders: ["時間軸", "A 隊 (舞台/VIP)", "B 隊 (媒體/花絮)", "C 隊 (工作人員紀錄)"],
+                tableHeaders: ["時間軸", "A 隊（手機）園珍、玻糖", "B 隊（相機）Ian", "C 隊（舞台）Kim"],
                 timeline: [
-                    { time: "13:30 - 14:30", teamA: "拍攝空景、舞台細節", teamB: "拍攝簽到台、伴手禮特寫", teamC: "重點：拍攝第 7 組場佈、第 3 組準備名牌的畫面。" },
-                    { time: "14:30 - 15:15", teamA: "捕捉 VIP 簽到、背板留影", teamB: "捕捉媒體領餐、翻閱新聞稿", teamC: "重點：拍攝第 2 組引導、第 4 組接待 VIP 的視角。" },
-                    { time: "15:15 - 15:45", teamA: "(核心任務) 全程錄影/拍攝鬼鬼主持、貴賓致詞", teamB: "拍攝台下媒體專注聽講、點頭畫面 (B-Roll)", teamC: "重點：拍攝第 5 組場控指揮、第 6 組監控設備的專注神情。" },
-                    { time: "15:45 - 16:00", teamA: "(QA/合照) 引導並拍攝官方大合照 (需確認站位)", teamB: "側拍媒體舉手提問、QA 互動瞬間", teamC: "重點：捕捉第 8 組機動維持秩序、第 11 組護衛 JK 的背影。" },
-                    { time: "16:00 - 18:00", teamA: "拍攝 VIP 與大家交流、專訪畫面", teamB: "自由捕捉現場談笑風生、換名片畫面", teamC: "重點：拍攝第 1 組補茶水、第 9 組清潔收拾的默默付出。" }
+                    { time: "13:00 - 14:30 場地空間佈置", teamA: "1. 茶點區佈置前、布置中(餐飲組)、佈置後。<br>2. 設備器材布置前、布置中(設備組)、佈置後。<br>3. 椅子布置前、布置中(場佈組)、佈置後。", teamB: "場地布置錄影", teamC: "1. 拍攝機位確認與架設。<br>2. 持續機位確認與架設。<br>3. 拍攝器材準備。" },
+                    { time: "14:30 - 15:15 報到進場與領餐", teamA: "簽到前、簽到中(簽到組)、伴手禮、名牌領取、接待畫面。", teamB: "簽到中、接待、簽點領取錄影。", teamC: "符命（臨時問題處理）、持續燈與機位設備注意。" },
+                    { time: "15:15 - 15:45 記者會開始", teamA: "主持人開場、協會組、EVOL 組、建設組等報告畫面。", teamB: "活動全程錄影", teamC: "舞台側錄、舞台拍照" },
+                    { time: "15:45 - 16:00 QA 與合照時間", teamA: "提問者、大合照（場控組協助站位）。", teamB: "活動全程錄影", teamC: "舞台側錄、大合照" },
+                    { time: "16:00 - 18:00", teamA: "交流、導訪、換名片畫面。", teamB: "活動全程錄影", teamC: "交流拍照" },
+                    { time: "18:00 場地撤收", teamA: "場地撤除紀錄", teamB: "場地撤除錄影", teamC: "持續燈撤收" },
+                    { time: "其他時間", teamA: "1. 背板（布置前、布置中、佈置後）。<br>2. 廁所清潔拍攝（清潔組）。", teamB: "", teamC: "" }
                 ],
                 notes: {
-                    before: ["活動紀錄拍攝 (手機)：", "1. 茶點區佈置前、佈置中 (工作人員)、佈置後、餐點領取中。", "2. 簽到前、簽到中、伴手禮、名片。<br>3. 接待紀錄拍攝。<br>4. 廁所清潔拍攝。"],
-                    during: ["紀錄主持人鬼鬼畫面、嘉賓合照及各組工作花絮。", "不干擾動線。"],
+                    before: ["A 隊（園珍、玻糖）手機拍照花絮。", "B 隊（Ian）相機全程錄影。", "C 隊（Kim）舞台機位確認與架設。"],
+                    during: ["A 隊紀錄各組工作花絮。", "B 隊全程錄影不中斷。", "C 隊專注舞台與合照側錄。"],
                     after: ["備份檔案。", "器材收納。"]
                 }
             },
@@ -384,18 +436,56 @@
             }
         ];
 
+        const agendaData = [
+            { timeRange: "00 – 05", item: "開場與特別介紹", detail: "主持人鬼鬼開場，介紹永豐銀行、同心動物醫院院長（貴賓）", duration: "5分鐘", highlight: true },
+            { timeRange: "05 – 08", item: "1. 沐陽協會", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false },
+            { timeRange: "08 – 11", item: "2. 宜捷幹細胞", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false },
+            { timeRange: "11 – 14", item: "3. 磐毅建設", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false },
+            { timeRange: "14 – 17", item: "4. 協奕法律", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false },
+            { timeRange: "17 – 20", item: "5. 滋和堂生醫", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false },
+            { timeRange: "20 – 23", item: "6. 衍舍室內裝修", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false },
+            { timeRange: "23 – 26", item: "7. EVOL 享樂卡", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false },
+            { timeRange: "26 – 45", item: "全體 QA 與交流", detail: "現場提問與自由交流時間", duration: "19分鐘", highlight: true },
+            { timeRange: "45 – 55", item: "全體 VIP 大合照", detail: "邀請所有報告代表與 VIP 貴賓與主持人合照", duration: "10分鐘", highlight: true },
+            { timeRange: "55 – 60", item: "活動結語", detail: "主持人總結、提醒後續事項", duration: "5分鐘", highlight: true }
+        ];
+
+        function renderAgenda() {
+            const container = document.getElementById('agenda-container');
+            let runningMinute = 15 * 60; // 15:15 in seconds-from-midnight equivalent
+            container.innerHTML = agendaData.map((row, index) => {
+                const base = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+                const rowClass = row.highlight ? 'bg-blue-50 border-l-4 border-l-accent' : base;
+                const timeClass = row.highlight ? 'text-accent font-bold' : 'text-gray-500 font-bold';
+                const itemClass = row.highlight ? 'font-bold text-gray-900' : 'font-semibold text-gray-700';
+                return `
+                <tr class="${rowClass} hover:bg-blue-50 transition-colors">
+                    <td class="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap text-xs md:text-sm ${timeClass}">${row.timeRange}</td>
+                    <td class="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm ${itemClass}">${row.item}</td>
+                    <td class="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-600 leading-relaxed hidden md:table-cell">${row.detail}</td>
+                    <td class="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap">
+                        <span class="inline-block ${row.highlight ? 'bg-accent text-white' : 'bg-gray-200 text-gray-700'} rounded-full px-2 md:px-3 py-1 text-xs font-semibold">${row.duration}</span>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
         const rundownData = [
-            { time: "前一日", item: "場地空間佈置", execution: "拍照背板、後方設備區架設、音響測試。", groups: "7.場佈、6.設備", note: "音響設備 2/7 希望可以測試<br>如有需前一天進場需提出" },
-            { time: "13:00", item: "場地空間佈置", execution: "報到桌、VIP 休息室、媒體沙發區、前二排座位 (VIP/媒體)。", groups: "7.場佈、6.設備、8.機動", note: "如有需前一天進場需提出" },
-            { time: "13:30", item: "全員戰備集合", execution: "1F 哨位啟動。3 組與 4 組完成名牌與餐盒/伴手禮配對、茶水供應，確認休息室物資到位、環境確認。", groups: "0-12 全體工作人員", note: "" },
-            { time: "14:30", item: "報到進場與領餐", execution: "1F 強制攔截：無名牌者禁止下 B1。<br>媒體：簽到並領取「淺綠名牌+餐盒」，引導至媒體沙發區。<br>VIP：簽到並領取「金黃名牌+餐盒」，引導至VIP 休息室。", groups: "2.引導、3.簽到、4.VIP 接待、8.機動", note: "" },
+            { time: "前一天", item: "場地空間佈置", execution: "拍照背板、後方設備區架設、音響測試。", groups: "7.場佈、6.設備", note: "音響設備 2/7 希望可以測試<br>如有需前一天進場需提出" },
+            { time: "11:00", item: "入場籌備＋場地布置", execution: "報到桌、VIP 休息室、媒體沙發區、前二排座位 (VIP/媒體)；媒體大砲後60個座位。", groups: "7.場佈、6.設備、8.機動", note: "如有需前一天進場需提出" },
+            { time: "12:00", item: "彩排開始", execution: "各就各位，依時程走一遍。上台報告者：準備報告，樁腳準備QA。主持人：由可欣協助。", groups: "0-12 全體工作人員，報告人(漢堡、饅頭、茉莉、Kevin、一起、易達、品嘉)", note: "" },
+            { time: "13:00", item: "驗收確認", execution: "各組組長確認設備材料到期，與總召報告。", groups: "0-12 全體工作人員＋組員", note: "各小組準備備忘點清單" },
+            { time: "13:30", item: "用餐時間", execution: "30分鐘用餐時間", groups: "0-12 全體工作人員", note: "" },
+            { time: "14:00", item: "全員戰備集合", execution: "1F 哨位啟動。3 組與 4 組完成名牌與餐盒/伴手禮配對、茶水供應，確認休息室物資到位、環境確認。", groups: "0-12 全體工作人員", note: "" },
+            { time: "14:30", item: "報到進場與領餐", execution: "1F 強制攔截：無名牌者禁止下 B1。<br>媒體：簽到並領取「淺綠名牌」，引導至媒體沙發區+遞送餐盒。<br>VIP：簽到並領取「金黃名牌」，引導至VIP 休息室使用點心。", groups: "2.引導、3.簽到、4.VIP 接待、8.機動", note: "各組不得同時離崗<br>副總召不進 B1 深處<br>8、11 組全員在位" },
             { time: "14:45", item: "閉門會議", execution: "VIP、媒體代表、主協辦移往小會議室。休息室與沙發區停止使用。", groups: "12.主持與助手、4.VIP 接待", note: "" },
-            { time: "15:15", item: "記者會正式開始", execution: "主持人鬼鬼開場控場。第一排 (VIP/主協辦)、第二排 (媒體) 依名牌顏色對號入座。", groups: "12.主持與助手、5.場控、6.設備、11.左右護法", note: "" },
-            { time: "15:45", item: "QA 與合照時間", execution: "媒體於後方設備區或座位區提問。安排嘉賓與主持人鬼鬼合照。", groups: "12.主持與助手、10.影音、5.場控", note: "事前需預抓拍攝站位、畫面" },
-            { time: "16:00", item: "交流會正式開始", execution: "全場開放自由交流。已領餐者可進餐。茶水供應補充。", groups: "1.餐飲", note: "需確認報名者、捍衛隊名牌顏色" },
-            { time: "16:00 - 18:00", item: "深度交流會", execution: "護衛組全程貼身保護 JK (不參與雜務)。機動組控管現場動線，引導與鬼鬼之合照人流。", groups: "11.左右護法、8.機動、9.清潔", note: "" },
+            { time: "15:00", item: "貴賓＋付費會員進場", execution: "1F 強制攔截：無名牌者禁止下 B1。<br>貴賓：簽到並領取「TBD名牌+餐盒」，引導至座位區。<br>付費會員：簽到並領取「TBD名牌+餐盒」，引導至座位區。", groups: "2.引導、3.簽到、4.VIP 接待、8.機動", note: "各組不得同時離崗<br>副總召不進 B1 深處<br>8、11 組全員在位" },
+            { time: "15:15", item: "記者會正式開始", execution: "主持人鬼鬼開場控場。第一排 (VIP/主協辦)、第二排 (媒體) 依名牌顏色對號入座。", groups: "12.主持與助手、5.場控、6.設備、11.左右護法", note: "每組報告完與鬼鬼+賓客合照<br>左右護法" },
+            { time: "16:00", item: "QA 與合照時間", execution: "媒體於後方設備區或座位區提問。安排嘉賓與主持人鬼鬼合照。Q&A (預計 10 分鐘，最短 5 分鐘，可直接跳過)", groups: "12.主持與助手、10.影音、5.場控", note: "事前需預抓拍攝站位、畫面" },
+            { time: "16:15", item: "交流會正式開始", execution: "全場開放自由交流。已領餐者可進餐。茶水供應補充。<br>簽到：媒體離開以名牌換伴手禮。VIP 離場時VIP接待提供伴手禮。", groups: "1.餐飲、3.簽到、4.VIP接待", note: "需確認報名者、捍衛隊名牌顏色" },
+            { time: "16-18", item: "深度交流會", execution: "護衛組全程貼身保護 JK (不參與雜務)。機動組控管現場動線，母組說明各組狀況及4/11組。", groups: "11.左右護法、8.機動、9.清潔", note: "各組入群QRcode準備" },
             { time: "18:00", item: "場地撤收復原", execution: "撤除所有設備、看板。垃圾 (尤其是餐盒殘渣) 清運撤離地下室。", groups: "8.機動、9.清潔、7.場佈", note: "" },
-            { time: "18:30", item: "活動圓滿結束", execution: "總召確認場地復原情形，全體工作人員解散歸賦。", groups: "0.總召", note: "" }
+            { time: "18:30", item: "活動圓滿結束", execution: "總召確認場地地復原情形，全體工作人員解散歸賦。", groups: "0.總召", note: "" }
         ];
 
         // Functions
@@ -651,7 +741,7 @@
             document.getElementById(`content-${tabName}`).classList.add('active');
 
             // Update Tab Styles
-            const tabs = ['groups', 'rundown'];
+            const tabs = ['groups', 'rundown', 'agenda'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
                 if (t === tabName) {
@@ -730,6 +820,7 @@
             initGroupFilter();  // 初始化組別選擇器
             renderGroups();     // 渲染組別卡片
             renderRundown();    // 渲染活動流程表
+            renderAgenda();     // 渲染記者會時程
         });
 
     </script>
