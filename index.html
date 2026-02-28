@@ -179,6 +179,30 @@
         </div>
     </div>
 
+    <!-- Script Modal -->
+    <div id="script-modal"
+        class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300 opacity-0"
+        onclick="if(event.target === this) closeScriptModal()">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0"
+            id="script-modal-content">
+            <div
+                class="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+                <div>
+                    <p class="text-xs text-amber-600 font-semibold uppercase tracking-wider mb-0.5">📄 講稿</p>
+                    <h2 class="text-xl font-bold text-gray-900" id="script-modal-title"></h2>
+                </div>
+                <button onclick="closeScriptModal()"
+                    class="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <div class="px-6 py-6 text-gray-700 leading-relaxed text-sm md:text-base" id="script-modal-body"></div>
+        </div>
+    </div>
+
     <!-- JavaScript Data & Logic -->
     <script>
         // Data
@@ -438,13 +462,51 @@
 
         const agendaData = [
             { timeRange: "00 – 05", item: "開場與特別介紹", detail: "主持人鬼鬼開場，介紹永豐銀行、同心動物醫院院長（貴賓）", duration: "5分鐘", highlight: true },
-            { timeRange: "05 – 08", item: "1. 沐陽協會", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false },
-            { timeRange: "08 – 11", item: "2. 宜捷幹細胞", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false },
-            { timeRange: "11 – 14", item: "3. 磐毅建設", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false },
-            { timeRange: "14 – 17", item: "4. 協奕法律", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false },
-            { timeRange: "17 – 20", item: "5. 滋和堂生醫", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false },
-            { timeRange: "20 – 23", item: "6. 衍舍室內裝修", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false },
-            { timeRange: "23 – 26", item: "7. EVOL 享樂卡", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false },
+            {
+                timeRange: "05 – 08", item: "1. 沐陽協會", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false, script: `
+<div class="space-y-4">
+  <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
+    <p class="text-xs font-bold text-amber-700 uppercase tracking-wider mb-2">🎙️ 口白（主持人）</p>
+    <p>沐陽這名字的由來，就是希望我們可以像太陽一樣。</p>
+    <p class="mt-1">太陽用溫暖照亮了世界每個陰暗的角落，</p>
+    <p>而沐陽用善意、用行動，來照亮每個需要幫助的人。</p>
+    <p class="mt-1">我們希望沐陽可以成為那些心中有困難的人的善意，</p>
+    <p>這就是沐陽這名字的由來。</p>
+  </div>
+  <div class="bg-gray-50 border-l-4 border-gray-400 p-4 rounded-r-lg">
+    <p class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">📋 報告稿</p>
+    <p>感謝大家前來，台灣是一個非常美好的社會。今天我來為沐陽協會做一個簡單的介紹。</p>
+    <p class="mt-2">我們是第一家在台灣以「互助精神」為核心的協會。</p>
+    <p class="mt-2">目前進行的目標包含：</p>
+    <ul class="list-disc ml-5 mt-1 space-y-1">
+      <li>「中和幫助地之家」</li>
+      <li>「茄薯派濃之家」</li>
+      <li>「花園後食堂」</li>
+    </ul>
+    <p class="mt-2">我們只有一個理念：<strong>「只要有心，任何人都可以去幫助別人。」</strong></p>
+    <p class="mt-2">每次回到台灣，看到越來越多的人一起投入這件事，到處都可以看到善的影響力。</p>
+  </div>
+  <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+    <p class="text-xs font-bold text-blue-700 uppercase tracking-wider mb-2">💬 對話段落（K／茉莉）</p>
+    <p><strong>K：</strong>在各地「動地之家」，我們看到最心疼的現象——「人永遠不足」。有人力、有技之工匠，卻找不到契機。</p>
+    <p class="mt-2"><strong>K：</strong>沒有人可以分階層看待，只要有心，人人都可以做到，我們不設限，因為好的事情本來就是這樣。</p>
+    <p class="mt-2"><strong>茉莉：</strong>我們希望在座各位，真正成為彼此善良的人。今天在這裡，歡迎大家加入！</p>
+    <p class="mt-2"><strong>K：</strong>讓這份溫暖帶進企業的溫度與文化！讓我們繼續走下去，形成善的社群力量！</p>
+  </div>
+  <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
+    <p class="text-xs font-bold text-green-700 uppercase tracking-wider mb-2">❓ QA 部分</p>
+    <p class="font-semibold">Q1：要如何加入協會？</p>
+    <p class="mt-1">A：請掃描報告最後一頁的 QR Code，或請現場工作人員協助。</p>
+    <p class="font-semibold mt-3">Q2：加入後會有哪些活動？</p>
+    <p class="mt-1">A：不定期舉辦線上與線下交流活動，擴展人際、積累資源、提升商業能量。</p>
+  </div>
+</div>` },
+            { timeRange: "08 – 11", item: "2. 宜捷幹細胞", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false, script: "【講稿尚未上傳】<br><br>請各協辦隨後將講稿內容更新至此處。" },
+            { timeRange: "11 – 14", item: "3. 磐毅建設", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false, script: "【講稿尚未上傳】<br><br>請各協辦隨後將講稿內容更新至此處。" },
+            { timeRange: "14 – 17", item: "4. 協奕法律", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false, script: "【講稿尚未上傳】<br><br>請各協辦隨後將講稿內容更新至此處。" },
+            { timeRange: "17 – 20", item: "5. 滋和堂生醫", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false, script: "【講稿尚未上傳】<br><br>請各協辦隨後將講稿內容更新至此處。" },
+            { timeRange: "20 – 23", item: "6. 衍舍室內裝修", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false, script: "【講稿尚未上傳】<br><br>請各協辦隨後將講稿內容更新至此處。" },
+            { timeRange: "23 – 26", item: "7. EVOL 享樂卡", detail: "主持人引言、代表報告、與主持人合照", duration: "3分鐘", highlight: false, script: "【講稿尚未上傳】<br><br>請各協辦隨後將講稿內容更新至此處。" },
             { timeRange: "26 – 45", item: "全體 QA 與交流", detail: "現場提問與自由交流時間", duration: "19分鐘", highlight: true },
             { timeRange: "45 – 55", item: "全體 VIP 大合照", detail: "邀請所有報告代表與 VIP 貴賓與主持人合照", duration: "10分鐘", highlight: true },
             { timeRange: "55 – 60", item: "活動結語", detail: "主持人總結、提醒後續事項", duration: "5分鐘", highlight: true }
@@ -452,22 +514,48 @@
 
         function renderAgenda() {
             const container = document.getElementById('agenda-container');
-            let runningMinute = 15 * 60; // 15:15 in seconds-from-midnight equivalent
             container.innerHTML = agendaData.map((row, index) => {
                 const base = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
                 const rowClass = row.highlight ? 'bg-blue-50 border-l-4 border-l-accent' : base;
                 const timeClass = row.highlight ? 'text-accent font-bold' : 'text-gray-500 font-bold';
                 const itemClass = row.highlight ? 'font-bold text-gray-900' : 'font-semibold text-gray-700';
+                const hasScript = !!row.script;
+                const clickAttr = hasScript ? `onclick="openScriptModal(${index})" style="cursor:pointer"` : '';
+                const scriptBadge = hasScript
+                    ? `<span class="ml-2 inline-block bg-amber-100 text-amber-700 border border-amber-300 rounded-full px-2 py-0.5 text-xs font-semibold">📄 講稿</span>`
+                    : '';
                 return `
-                <tr class="${rowClass} hover:bg-blue-50 transition-colors">
+                <tr class="${rowClass} ${hasScript ? 'hover:bg-amber-50' : 'hover:bg-blue-50'} transition-colors" ${clickAttr}>
                     <td class="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap text-xs md:text-sm ${timeClass}">${row.timeRange}</td>
-                    <td class="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm ${itemClass}">${row.item}</td>
+                    <td class="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm ${itemClass}">${row.item}${scriptBadge}</td>
                     <td class="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-600 leading-relaxed hidden md:table-cell">${row.detail}</td>
                     <td class="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap">
                         <span class="inline-block ${row.highlight ? 'bg-accent text-white' : 'bg-gray-200 text-gray-700'} rounded-full px-2 md:px-3 py-1 text-xs font-semibold">${row.duration}</span>
                     </td>
                 </tr>`;
             }).join('');
+        }
+
+        function openScriptModal(index) {
+            const row = agendaData[index];
+            if (!row || !row.script) return;
+            const modal = document.getElementById('script-modal');
+            const title = document.getElementById('script-modal-title');
+            const body = document.getElementById('script-modal-body');
+            title.textContent = row.item;
+            body.innerHTML = row.script;
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            document.getElementById('script-modal-content').classList.remove('scale-95', 'opacity-0');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeScriptModal() {
+            const modal = document.getElementById('script-modal');
+            modal.classList.add('opacity-0');
+            document.getElementById('script-modal-content').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); document.body.style.overflow = ''; }, 300);
         }
 
         const rundownData = [
@@ -480,7 +568,7 @@
             { time: "14:30", item: "報到進場與領餐", execution: "1F 強制攔截：無名牌者禁止下 B1。<br>媒體：簽到並領取「淺綠名牌」，引導至媒體沙發區+遞送餐盒。<br>VIP：簽到並領取「金黃名牌」，引導至VIP 休息室使用點心。", groups: "2.引導、3.簽到、4.VIP 接待、8.機動", note: "各組不得同時離崗<br>副總召不進 B1 深處<br>8、11 組全員在位" },
             { time: "14:45", item: "閉門會議", execution: "VIP、媒體代表、主協辦移往小會議室。休息室與沙發區停止使用。", groups: "12.主持與助手、4.VIP 接待", note: "" },
             { time: "15:00", item: "貴賓＋付費會員進場", execution: "1F 強制攔截：無名牌者禁止下 B1。<br>貴賓：簽到並領取「TBD名牌+餐盒」，引導至座位區。<br>付費會員：簽到並領取「TBD名牌+餐盒」，引導至座位區。", groups: "2.引導、3.簽到、4.VIP 接待、8.機動", note: "各組不得同時離崗<br>副總召不進 B1 深處<br>8、11 組全員在位" },
-            { time: "15:15", item: "記者會正式開始", execution: "主持人鬼鬼開場控場。第一排 (VIP/主協辦)、第二排 (媒體) 依名牌顏色對號入座。", groups: "12.主持與助手、5.場控、6.設備、11.左右護法", note: "每組報告完與鬼鬼+賓客合照<br>左右護法" },
+            { time: "15:15", item: "記者會正式開始", execution: "主持人鬼鬼開場控場。第一排 (VIP/主協辦)、第二排 (媒體) 依名牌顏色對號入座。", groups: "12.主持與助手、5.場控、6.設備、11.左右護法", note: "每組報告完與鬼鬼+賓客合照<br>左右護法", redHighlight: true },
             { time: "16:00", item: "QA 與合照時間", execution: "媒體於後方設備區或座位區提問。安排嘉賓與主持人鬼鬼合照。Q&A (預計 10 分鐘，最短 5 分鐘，可直接跳過)", groups: "12.主持與助手、10.影音、5.場控", note: "事前需預抓拍攝站位、畫面" },
             { time: "16:15", item: "交流會正式開始", execution: "全場開放自由交流。已領餐者可進餐。茶水供應補充。<br>簽到：媒體離開以名牌換伴手禮。VIP 離場時VIP接待提供伴手禮。", groups: "1.餐飲、3.簽到、4.VIP接待", note: "需確認報名者、捍衛隊名牌顏色" },
             { time: "16-18", item: "深度交流會", execution: "護衛組全程貼身保護 JK (不參與雜務)。機動組控管現場動線，母組說明各組狀況及4/11組。", groups: "11.左右護法、8.機動、9.清潔", note: "各組入群QRcode準備" },
@@ -720,9 +808,9 @@
                 }
 
                 return `
-                <tr class="${rowClass} hover:bg-blue-50 transition-colors">
-                    <td class="px-2 md:px-6 py-2 md:py-4 whitespace-nowrap text-xs md:text-sm font-bold ${isRelevant ? 'text-accent' : 'text-gray-500'}">${row.time}</td>
-                    <td class="px-2 md:px-6 py-2 md:py-4 text-xs md:text-sm ${isRelevant ? 'font-bold text-gray-900' : 'font-semibold text-gray-700'}">${row.item}</td>
+                <tr class="${row.redHighlight ? 'bg-red-50 border-l-4 border-l-red-500' : rowClass} hover:bg-blue-50 transition-colors">
+                    <td class="px-2 md:px-6 py-2 md:py-4 whitespace-nowrap text-xs md:text-sm font-bold ${row.redHighlight ? 'text-red-600' : isRelevant ? 'text-accent' : 'text-gray-500'}">${row.time}</td>
+                    <td class="px-2 md:px-6 py-2 md:py-4 text-xs md:text-sm ${row.redHighlight ? 'font-bold text-red-700' : isRelevant ? 'font-bold text-gray-900' : 'font-semibold text-gray-700'}">${row.item}${row.redHighlight ? ' <span class="text-red-500">🔴</span>' : ''}</td>
                     <td class="px-2 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-700 leading-relaxed hidden md:table-cell">${row.execution}</td>
                     <td class="px-2 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-600">
                         <span class="inline-block ${isRelevant ? 'bg-accent text-white' : 'bg-gray-200 text-gray-700'} rounded-full px-2 md:px-3 py-1 text-xs font-semibold">
