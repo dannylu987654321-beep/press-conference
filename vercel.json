@@ -1,0 +1,12 @@
+{
+    "rewrites": [
+        {
+            "source": "/",
+            "destination": "/記者會/index.html"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/記者會/$1"
+        }
+    ]
+}
