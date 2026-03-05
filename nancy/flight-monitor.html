@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>機票監控器 ✈️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://widgets.skyscanner.net/widget-server/js/loader.js" async></script>
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --card: #111827;
+            --card2: #1a2235;
+            --border: #1e2d45;
+            --accent: #3b82f6;
+            --accent2: #8b5cf6;
+            --green: #10b981;
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --header-bg: linear-gradient(135deg, #0f1729 0%, #1a1040 100%);
+            --input-bg: #0d1526;
+            --input-border: #2d3f5c;
+            --input-focus-bg: #111e35;
+        }
+
+        /* ── Light Mode ───────────────────────────── */
+        [data-theme="light"] {
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --card2: #f1f5f9;
+            --border: #cbd5e1;
+            --accent: #2563eb;
+            --accent2: #7c3aed;
+            --green: #059669;
+            --red: #dc2626;
+            --yellow: #d97706;
+            --text: #1e293b;
+            --muted: #64748b;
+            --header-bg: linear-gradient(135deg, #1e40af 0%, #4c1d95 100%);
+            --input-bg: #f8fafc;
+            --input-border: #94a3b8;
+            --input-focus-bg: #eff6ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 18px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background .3s;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+        }
+
+        .logo h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo p {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 24px;
+        }
+
+        .hstat {
+            text-align: center;
+        }
+
+        .hstat .val {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .hstat .lbl {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-btn {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background .2s, transform .1s;
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .theme-btn:active {
+            transform: translateY(0);
+        }
+
+        .theme-btn .icon {
+            font-size: 16px;
+            transition: transform .4s;
+        }
+
+        .theme-btn:hover .icon {
+            transform: rotate(20deg);
+        }
+
+        /* Smooth global transition */
+        body,
+        .card,
+        .card2,
+        header,
+        input,
+        select,
+        .monitor-item,
+        .alert-list li,
+        .tab,
+        .widget-wrap {
+            transition: background .25s, color .25s, border-color .25s;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .grid2 {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media(max-width:800px) {
+            .grid2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 9px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color .2s, background .2s;
+        }
+
+        input::placeholder {
+            color: #4b6080;
+        }
+
+        select option {
+            background: var(--card);
+            color: var(--text);
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--input-focus-bg);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            transition: opacity .2s, transform .1s;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            opacity: .9;
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Monitor List */
+        .monitor-item {
+            background: var(--card2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: border-color .2s, background .2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .monitor-item:hover {
+            border-color: var(--accent);
+            background: #1e2d45;
+        }
+
+        .monitor-item.active {
+            border-color: var(--accent);
+        }
+
+        .monitor-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(var(--accent), var(--accent2));
+            border-radius: 3px 0 0 3px;
+        }
+
+        .mi-route {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .mi-route span {
+            color: var(--accent);
+        }
+
+        .mi-meta {
+            font-size: 11px;
+            color: var(--muted);
+            display: flex;
+            gap: 12px;
+        }
+
+        .mi-price {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            text-align: right;
+        }
+
+        .mi-price .cur {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--green);
+        }
+
+        .mi-price .chg {
+            font-size: 11px;
+        }
+
+        .chg.up {
+            color: var(--red);
+        }
+
+        .chg.dn {
+            color: var(--green);
+        }
+
+        .del-btn {
+            position: absolute;
+            right: 16px;
+            top: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 14px;
+            transition: color .2s;
+        }
+
+        .del-btn:hover {
+            color: var(--red);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        .badge.deal {
+            background: rgba(16, 185, 129, .2);
+            color: var(--green);
+        }
+
+        .badge.high {
+            background: rgba(239, 68, 68, .2);
+            color: var(--red);
+        }
+
+        .badge.normal {
+            background: rgba(100, 116, 139, .2);
+            color: var(--muted);
+        }
+
+        /* Chart Area */
+        .chart-wrap {
+            position: relative;
+            height: 220px;
+        }
+
+        .route-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .route-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .route-title em {
+            font-style: normal;
+            color: var(--accent);
+        }
+
+        .price-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .ps-item {
+            background: var(--card2);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .ps-item .val {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .ps-item .lbl {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .ps-item .val.green {
+            color: var(--green);
+        }
+
+        .ps-item .val.red {
+            color: var(--red);
+        }
+
+        .ps-item .val.yellow {
+            color: var(--yellow);
+        }
+
+        /* Alert section */
+        .alert-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .alert-input {
+            flex: 1;
+        }
+
+        .alert-btn {
+            padding: 10px 16px;
+            border-radius: 9px;
+            border: none;
+            background: var(--green);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .alert-list {
+            list-style: none;
+        }
+
+        .alert-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: var(--card2);
+            border: 1px solid #2d3f5c;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #e2e8f0;
+        }
+
+        .alert-list li .rmv {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .alert-list li .rmv:hover {
+            color: var(--red);
+        }
+
+        /* Price tiers */
+        .tier-bar {
+            margin-bottom: 16px;
+        }
+
+        .tier-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+        }
+
+        .tier-track {
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--green) 0%, var(--yellow) 50%, var(--red) 100%);
+            position: relative;
+        }
+
+        .tier-thumb {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #fff;
+            top: -3px;
+            transform: translateX(-50%);
+            box-shadow: 0 0 0 3px var(--accent);
+            transition: left .5s;
+        }
+
+        /* Recommendation */
+        .rec-box {
+            background: rgba(59, 130, 246, .08);
+            border: 1px solid rgba(59, 130, 246, .3);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rec-icon {
+            font-size: 28px;
+        }
+
+        .rec-text {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        .rec-text strong {
+            color: #60a5fa;
+        }
+
+        /* Empty */
+        .empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+        }
+
+        .empty .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty p {
+            font-size: 14px;
+        }
+
+        /* Pulse animation */
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .5
+            }
+        }
+
+        .live {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse 1.5s infinite;
+            margin-right: 5px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .tab {
+            padding: 7px 14px;
+            border-radius: 8px;
+            border: 1px solid #2d3f5c;
+            background: #0d1526;
+            color: #94a3b8;
+            font-size: 13px;
+            cursor: pointer;
+            transition: .2s;
+            font-family: inherit;
+        }
+
+        .tab:hover {
+            color: #e2e8f0;
+            border-color: var(--accent);
+        }
+
+        .tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-size: 14px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .5);
+            z-index: 999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: .3s;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Skyscanner Widget Section */
+        .widget-section {
+            max-width: 1200px;
+            margin: 0 auto 40px;
+            padding: 0 24px;
+        }
+
+        .widget-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .widget-header-logo {
+            background: linear-gradient(135deg, #0770e3, #05c4f8);
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: .03em;
+        }
+
+        .widget-header-text h2 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .widget-header-text p {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .widget-wrap {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            overflow: visible;
+        }
+
+        .widget-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .widget-tab {
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: none;
+            color: var(--muted);
+            font-size: 13px;
+            cursor: pointer;
+            transition: .2s;
+            font-family: inherit;
+        }
+
+        .widget-tab.active {
+            background: linear-gradient(135deg, #0770e3, #05c4f8);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .widget-pane {
+            display: none;
+        }
+
+        .widget-pane.active {
+            display: block;
+        }
+
+        /* Skyscanner widget 本身只支援亮色，強制內部為白底深字 */
+        .widget-pane {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 8px;
+            color: #1e293b;
+        }
+
+        /* 暗色模式下 widget 容器內部強制亮色 */
+        :root .widget-pane,
+        [data-theme="light"] .widget-pane {
+            background: #ffffff;
+        }
+
+        /* 暗色模式下整個 widget-wrap 內部的字色強制為深色 */
+        .widget-pane * {
+            color: #1e293b !important;
+        }
+
+        /* widget-tab 按鈕在暗色模式下要獨立保持可讀 */
+        .widget-tab {
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card2);
+            color: var(--text) !important;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: .2s;
+            font-family: inherit;
+        }
+
+        .widget-tab:hover {
+            border-color: var(--accent);
+            color: var(--text) !important;
+        }
+
+        .widget-tab.active {
+            background: linear-gradient(135deg, #0770e3, #05c4f8) !important;
+            border-color: transparent;
+            color: #fff !important;
+        }
+
+        .widget-note {
+            font-size: 11px;
+            color: var(--muted);
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .widget-note a {
+            color: #05c4f8;
+            text-decoration: none;
+        }
+
+        .widget-note a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Google Flights Form ─────────────────────── */
+        .gf-trip-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .gf-trip-btn {
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: var(--card2);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            transition: .2s;
+        }
+
+        .gf-trip-btn:hover {
+            border-color: #4285f4;
+            color: #4285f4;
+        }
+
+        .gf-trip-btn.active {
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            border-color: transparent;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .gf-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+            align-items: end;
+        }
+
+        .gf-row-sm {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .gf-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gf-field label {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 500;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .gf-field input,
+        .gf-field select {
+            padding: 11px 14px;
+            border-radius: 10px;
+            border: 1.5px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color .2s;
+        }
+
+        .gf-field input:focus,
+        .gf-field select:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .gf-swap {
+            padding: 11px 10px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            background: var(--card2);
+            color: var(--text);
+            font-size: 18px;
+            cursor: pointer;
+            align-self: end;
+            transition: background .2s, transform .3s;
+            font-family: inherit;
+        }
+
+        .gf-swap:hover {
+            background: var(--accent);
+            color: #fff;
+            transform: rotate(180deg);
+        }
+
+        .gf-search-btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 6px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: inherit;
+            transition: opacity .2s, transform .1s;
+            box-shadow: 0 4px 20px rgba(66, 133, 244, .3);
+        }
+
+        .gf-search-btn:hover {
+            opacity: .92;
+            transform: translateY(-1px);
+        }
+
+        .gf-search-btn:active {
+            transform: translateY(0);
+        }
+
+        @media(max-width:600px) {
+            .gf-row {
+                grid-template-columns: 1fr;
+            }
+
+            .gf-swap {
+                display: none;
+            }
+
+            .gf-row-sm {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">
+            <div class="logo-icon">✈️</div>
+            <div>
+                <h1>機票監控器</h1>
+                <p>Flight Price Tracker</p>
+            </div>
+        </div>
+        <div class="header-stats">
+            <div class="hstat">
+                <div class="val" id="totalMonitors">0</div>
+                <div class="lbl">監控航線</div>
+            </div>
+            <div class="hstat">
+                <div class="val" id="totalAlerts">0</div>
+                <div class="lbl">價格警報</div>
+            </div>
+            <div class="hstat">
+                <div class="val" id="bestDeal">-</div>
+                <div class="lbl">最低折扣</div>
+            </div>
+        </div>
+        <div class="theme-toggle">
+            <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">
+                <span class="icon" id="themeIcon">🌙</span>
+                <span id="themeLabel">亮色模式</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="grid2">
+            <!-- LEFT PANEL -->
+            <div>
+                <!-- Add Route Card -->
+                <div class="card">
+                    <div class="card-title">➕ 新增監控航線</div>
+                    <div class="form-group form-row">
+                        <div>
+                            <label>出發地</label>
+                            <select id="depAirport">
+                                <option value="TPE">🇹🇼 台北 TPE</option>
+                                <option value="KHH">🇹🇼 高雄 KHH</option>
+                                <option value="RMQ">🇹🇼 台中 RMQ</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>目的地</label>
+                            <select id="arrAirport">
+                                <option value="NRT">🇯🇵 東京 NRT</option>
+                                <option value="HND">🇯🇵 東京 HND</option>
+                                <option value="OSA">🇯🇵 大阪 KIX</option>
+                                <option value="FUK">🇯🇵 福岡 FUK</option>
+                                <option value="OKA">🇯🇵 沖繩 OKA</option>
+                                <option value="BKK">🇹🇭 曼谷 BKK</option>
+                                <option value="SIN">🇸🇬 新加坡 SIN</option>
+                                <option value="HKG">🇭🇰 香港 HKG</option>
+                                <option value="ICN">🇰🇷 首爾 ICN</option>
+                                <option value="PEK">🇨🇳 北京 PEK</option>
+                                <option value="LAX">🇺🇸 洛杉磯 LAX</option>
+                                <option value="LHR">🇬🇧 倫敦 LHR</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group form-row">
+                        <div>
+                            <label>出發日期</label>
+                            <input type="date" id="depDate">
+                        </div>
+                        <div>
+                            <label>回程日期（選填）</label>
+                            <input type="date" id="retDate">
+                        </div>
+                    </div>
+                    <div class="form-group form-row">
+                        <div>
+                            <label>乘客人數</label>
+                            <select id="pax">
+                                <option value="1">1 人</option>
+                                <option value="2">2 人</option>
+                                <option value="3">3 人</option>
+                                <option value="4">4 人</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>艙等</label>
+                            <select id="cabin">
+                                <option value="economy">經濟艙</option>
+                                <option value="premium">豪華經濟</option>
+                                <option value="business">商務艙</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>目標價格（TWD，選填）</label>
+                        <input type="number" id="targetPrice" placeholder="例：8000">
+                    </div>
+                    <button class="btn" onclick="addMonitor()">🔍 開始監控</button>
+                </div>
+
+                <!-- Monitor List -->
+                <div class="card">
+                    <div class="card-title"><span class="live"></span> 監控中的航線</div>
+                    <div id="monitorList">
+                        <div class="empty">
+                            <div class="icon">🛫</div>
+                            <p>尚未新增任何監控航線</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL -->
+            <div>
+                <div id="detailPanel">
+                    <div class="card empty">
+                        <div class="icon">📊</div>
+                        <p>點選左側航線查看價格走勢</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ GOOGLE FLIGHTS SEARCH SECTION ═══ -->
+    <div class="widget-section">
+        <div class="widget-header">
+            <div class="widget-header-logo" style="background:linear-gradient(135deg,#4285f4,#34a853)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"
+                    style="vertical-align:middle;margin-right:5px">
+                    <path
+                        d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+                </svg>
+                Google Flights
+            </div>
+            <div class="widget-header-text">
+                <h2>直接搜尋 Google Flights 票價</h2>
+                <p>填入條件後點搜尋，直接跳轉 Google Flights 比價</p>
+            </div>
+        </div>
+        <div class="widget-wrap">
+
+            <!-- Trip Type Toggle -->
+            <div class="gf-trip-toggle">
+                <button class="gf-trip-btn active" id="gfRound" onclick="setTrip('round')">🔄 來回</button>
+                <button class="gf-trip-btn" id="gfOne" onclick="setTrip('one')">➡️ 單程</button>
+                <button class="gf-trip-btn" id="gfMulti" onclick="setTrip('multi')">�️ 多程</button>
+            </div>
+
+            <!-- Route Row -->
+            <div class="gf-row" id="gfRouteRow">
+                <div class="gf-field">
+                    <label>出發地</label>
+                    <select id="gfDep">
+                        <option value="TPE">🇹🇼 台北 (TPE)</option>
+                        <option value="KHH">🇹🇼 高雄 (KHH)</option>
+                        <option value="RMQ">🇹🇼 台中 (RMQ)</option>
+                    </select>
+                </div>
+                <button class="gf-swap" onclick="swapAirports()" title="交換">⇄</button>
+                <div class="gf-field">
+                    <label>目的地</label>
+                    <select id="gfArr">
+                        <option value="NRT">🇯🇵 東京成田 (NRT)</option>
+                        <option value="HND">🇯🇵 東京羽田 (HND)</option>
+                        <option value="KIX">🇯🇵 大阪 (KIX)</option>
+                        <option value="FUK">🇯🇵 福岡 (FUK)</option>
+                        <option value="OKA">🇯🇵 沖繩 (OKA)</option>
+                        <option value="BKK">🇹🇭 曼谷 (BKK)</option>
+                        <option value="SIN">🇸🇬 新加坡 (SIN)</option>
+                        <option value="HKG">🇭🇰 香港 (HKG)</option>
+                        <option value="ICN">🇰🇷 首爾 (ICN)</option>
+                        <option value="PEK">🇨🇳 北京 (PEK)</option>
+                        <option value="LAX">🇺🇸 洛杉磯 (LAX)</option>
+                        <option value="LHR">🇬🇧 倫敦 (LHR)</option>
+                        <option value="SYD">🇦🇺 雪梨 (SYD)</option>
+                        <option value="CDG">🇫🇷 巴黎 (CDG)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Date Row -->
+            <div class="gf-row">
+                <div class="gf-field">
+                    <label>出發日期</label>
+                    <input type="date" id="gfDepDate">
+                </div>
+                <div class="gf-field" id="gfRetDateWrap">
+                    <label>回程日期</label>
+                    <input type="date" id="gfRetDate">
+                </div>
+            </div>
+
+            <!-- Pax & Cabin Row -->
+            <div class="gf-row gf-row-sm">
+                <div class="gf-field">
+                    <label>成人</label>
+                    <select id="gfAdults">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>
+                </div>
+                <div class="gf-field">
+                    <label>兒童 (2-11)</label>
+                    <select id="gfChild">
+                        <option>0</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                    </select>
+                </div>
+                <div class="gf-field">
+                    <label>艙等</label>
+                    <select id="gfCabin">
+                        <option value="1">經濟艙</option>
+                        <option value="2">豪華經濟</option>
+                        <option value="3">商務艙</option>
+                        <option value="4">頭等艙</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Search Button -->
+            <button class="gf-search-btn" onclick="searchGoogleFlights()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                    <path
+                        d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                </svg>
+                在 Google Flights 搜尋航班
+            </button>
+
+            <p class="widget-note">點擊後將在新分頁開啟 <a href="https://www.google.com/travel/flights" target="_blank">Google
+                    Flights</a>，由 Google 提供即時票價</p>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ─── State ───────────────────────────────────────────────
+        let monitors = JSON.parse(localStorage.getItem('flightMonitors') || '[]');
+        let activeId = null;
+        let chartInst = null;
+        let priceUpdateInterval = null;
+
+        // ─── Airport Name Map ─────────────────────────────────────
+        const airports = {
+            TPE: '台北(TPE)', KHH: '高雄(KHH)', RMQ: '台中(RMQ)',
+            NRT: '東京成田(NRT)', HND: '東京羽田(HND)', OSA: '大阪(KIX)', FUK: '福岡(FUK)', OKA: '沖繩(OKA)',
+            BKK: '曼谷(BKK)', SIN: '新加坡(SIN)', HKG: '香港(HKG)', ICN: '首爾(ICN)',
+            PEK: '北京(PEK)', LAX: '洛杉磯(LAX)', LHR: '倫敦(LHR)'
+        };
+        const basePrices = {
+            'TPE-NRT': 8500, 'TPE-HND': 9000, 'TPE-OSA': 7800, 'TPE-FUK': 7200, 'TPE-OKA': 5500,
+            'TPE-BKK': 9500, 'TPE-SIN': 11000, 'TPE-HKG': 4800, 'TPE-ICN': 7500, 'TPE-PEK': 6500,
+            'TPE-LAX': 28000, 'TPE-LHR': 38000,
+            'KHH-NRT': 9200, 'KHH-OSA': 8300, 'KHH-BKK': 10000, 'KHH-SIN': 11500, 'KHH-ICN': 8000,
+            'RMQ-NRT': 9500, 'RMQ-OSA': 8600
+        };
+
+        // ─── Helpers ─────────────────────────────────────────────
+        function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+        function fmtPrice(n) { return 'NT$' + Math.round(n).toLocaleString(); }
+        function today() { return new Date().toISOString().split('T')[0]; }
+        function save() { localStorage.setItem('flightMonitors', JSON.stringify(monitors)); }
+
+        function getBase(dep, arr) {
+            return basePrices[dep + '-' + arr] || basePrices[arr + '-' + dep] || 15000;
+        }
+
+        function genHistory(base, days = 30) {
+            const hist = []; let price = base;
+            for (let i = days; i >= 0; i--) {
+                const d = new Date(); d.setDate(d.getDate() - i);
+                price = Math.max(base * 0.6, Math.min(base * 1.5, price + (Math.random() - 0.47) * base * 0.04));
+                hist.push({ date: d.toISOString().split('T')[0], price: Math.round(price) });
+            }
+            return hist;
+        }
+
+        function addNoise(m) {
+            const last = m.history[m.history.length - 1].price;
+            const base = getBase(m.dep, m.arr);
+            const newPrice = Math.max(base * 0.55, Math.min(base * 1.6, last + (Math.random() - 0.48) * base * 0.03));
+            const now = new Date().toISOString().split('T')[0];
+            if (m.history[m.history.length - 1].date === now) {
+                m.history[m.history.length - 1].price = Math.round(newPrice);
+            } else {
+                m.history.push({ date: now, price: Math.round(newPrice) });
+                if (m.history.length > 90) m.history.shift();
+            }
+            m.current = Math.round(newPrice);
+        }
+
+        function getDeal(m) {
+            const base = getBase(m.dep, m.arr);
+            const pct = (m.current - base) / base;
+            if (pct < -0.2) return 'deal';
+            if (pct > 0.2) return 'high';
+            return 'normal';
+        }
+        function getDealLabel(d) { return d === 'deal' ? '超值' : 'd' === 'high' ? '偏高' : '正常'; }
+
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2800);
+        }
+
+        // ─── Add Monitor ──────────────────────────────────────────
+        function addMonitor() {
+            const dep = document.getElementById('depAirport').value;
+            const arr = document.getElementById('arrAirport').value;
+            const depDate = document.getElementById('depDate').value;
+            const retDate = document.getElementById('retDate').value;
+            const pax = +document.getElementById('pax').value;
+            const cabin = document.getElementById('cabin').value;
+            const target = +document.getElementById('targetPrice').value || null;
+
+            if (!depDate) { toast('⚠️ 請選擇出發日期'); return; }
+            if (dep === arr) { toast('⚠️ 出發地與目的地不能相同'); return; }
+            const exists = monitors.find(m => m.dep === dep && m.arr === arr && m.depDate === depDate && m.cabin === cabin);
+            if (exists) { toast('⚠️ 此航線已在監控中'); return; }
+
+            const base = getBase(dep, arr) * (cabin === 'premium' ? 1.4 : cabin === 'business' ? 3 : 1) * pax;
+            const history = genHistory(base);
+            const current = history[history.length - 1].price;
+            const m = { id: uid(), dep, arr, depDate, retDate, pax, cabin, target, history, current, alerts: [], created: today() };
+            monitors.unshift(m);
+            save(); renderList(); selectMonitor(m.id);
+            toast('✅ 已開始監控 ' + airports[dep] + ' → ' + airports[arr]);
+        }
+
+        // ─── Render List ──────────────────────────────────────────
+        function renderList() {
+            const el = document.getElementById('monitorList');
+            if (!monitors.length) { el.innerHTML = '<div class="empty"><div class="icon">🛫</div><p>尚未新增任何監控航線</p></div>'; return; }
+            const cabinLabel = { economy: '經濟艙', premium: '豪華經濟', business: '商務艙' };
+            el.innerHTML = monitors.map(m => {
+                const prev = m.history.length > 1 ? m.history[m.history.length - 2].price : m.current;
+                const diff = m.current - prev;
+                const chgClass = diff > 0 ? 'up' : 'dn';
+                const chgSign = diff > 0 ? '▲' : '▼';
+                const deal = getDeal(m);
+                const dealLabel = deal === 'deal' ? '超值' : deal === 'high' ? '偏高' : '正常';
+                const active = m.id === activeId ? 'active' : '';
+                return `<div class="monitor-item ${active}" onclick="selectMonitor('${m.id}')">
+      <button class="del-btn" onclick="event.stopPropagation();removeMonitor('${m.id}')">✕</button>
+      <div class="mi-route">${airports[m.dep]} <span>→</span> ${airports[m.arr]}
+        <span class="badge ${deal}">${dealLabel}</span>
+      </div>
+      <div class="mi-meta">
+        <span>📅 ${m.depDate}</span>
+        <span>👤 ${m.pax}人</span>
+        <span>${cabinLabel[m.cabin]}</span>
+      </div>
+      <div class="mi-price">
+        <div class="cur">${fmtPrice(m.current)}</div>
+        <div class="chg ${chgClass}">${chgSign} ${fmtPrice(Math.abs(diff))}</div>
+      </div>
+    </div>`;
+            }).join('');
+            // Update header stats
+            document.getElementById('totalMonitors').textContent = monitors.length;
+            const totalAlerts = monitors.reduce((a, m) => a + m.alerts.length, 0);
+            document.getElementById('totalAlerts').textContent = totalAlerts;
+            const bestM = monitors.reduce((best, m) => {
+                const base = getBase(m.dep, m.arr); const pct = (m.current - base) / base;
+                if (!best || pct < best.pct) return { pct, label: Math.round(-pct * 100) + '%' }; return best;
+            }, null);
+            document.getElementById('bestDeal').textContent = bestM && bestM.pct < 0 ? '-' + bestM.label : '-';
+        }
+
+        // ─── Select Monitor ────────────────────────────────────────
+        function selectMonitor(id) {
+            activeId = id;
+            renderList();
+            const m = monitors.find(x => x.id === id);
+            if (!m) return;
+            renderDetail(m);
+        }
+
+        function removeMonitor(id) {
+            monitors = monitors.filter(m => m.id !== id);
+            if (activeId === id) { activeId = null; document.getElementById('detailPanel').innerHTML = '<div class="card empty"><div class="icon">📊</div><p>點選左側航線查看價格走勢</p></div>'; }
+            save(); renderList(); toast('已移除監控');
+        }
+
+        // ─── Render Detail ────────────────────────────────────────
+        function renderDetail(m) {
+            const base = getBase(m.dep, m.arr) * (m.cabin === 'premium' ? 1.4 : m.cabin === 'business' ? 3 : 1) * m.pax;
+            const prices = m.history.map(h => h.price);
+            const minP = Math.min(...prices); const maxP = Math.max(...prices); const avgP = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
+            const deal = getDeal(m);
+            const pctFromBase = ((m.current - base) / base * 100).toFixed(1);
+            const tierPct = Math.min(100, Math.max(0, ((m.current - minP) / (maxP - minP)) * 100));
+            const cabinLabel = { economy: '經濟艙', premium: '豪華經濟艙', business: '商務艙' };
+
+            // Recommendation
+            let recIcon = '', recMsg = '';
+            if (deal === 'deal') { recIcon = '🟢'; recMsg = '<strong>現在是購票好時機！</strong>目前票價低於歷史均價，建議盡快訂購。'; }
+            else if (deal === 'high') { recIcon = '🔴'; recMsg = '<strong>建議稍等觀望。</strong>目前票價偏高，可設定價格警報等待更好的時機。'; }
+            else { recIcon = '🟡'; recMsg = '<strong>票價處於正常範圍。</strong>如果日期彈性，可再等待可能的促銷活動。'; }
+
+            document.getElementById('detailPanel').innerHTML = `
+    <div class="card">
+      <div class="route-header">
+        <div class="route-title">${airports[m.dep]} <em>→</em> ${airports[m.arr]}</div>
+        <div style="font-size:12px;color:var(--muted)">${cabinLabel[m.cabin]} · ${m.pax}人 · ${m.depDate}${m.retDate ? ' → ' + m.retDate : ''}</div>
+      </div>
+      <div class="price-summary">
+        <div class="ps-item">
+          <div class="val green">${fmtPrice(minP)}</div>
+          <div class="lbl">30天最低</div>
+        </div>
+        <div class="ps-item">
+          <div class="val yellow">${fmtPrice(avgP)}</div>
+          <div class="lbl">平均價格</div>
+        </div>
+        <div class="ps-item">
+          <div class="val red">${fmtPrice(maxP)}</div>
+          <div class="lbl">30天最高</div>
+        </div>
+      </div>
+      <div class="tier-bar">
+        <div class="tier-label"><span>最低 ${fmtPrice(minP)}</span><span>當前 ${fmtPrice(m.current)} (${pctFromBase > 0 ? '+' : ''}${pctFromBase}%)</span><span>最高 ${fmtPrice(maxP)}</span></div>
+        <div class="tier-track"><div class="tier-thumb" style="left:${tierPct}%"></div></div>
+      </div>
+      <div class="rec-box" style="margin-bottom:16px">
+        <div class="rec-icon">${recIcon}</div>
+        <div class="rec-text">${recMsg}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📈 30天價格走勢</div>
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab(this,'7')">7天</button>
+        <button class="tab" onclick="switchTab(this,'14')">14天</button>
+        <button class="tab" onclick="switchTab(this,'30')">30天</button>
+      </div>
+      <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🔔 價格警報設定</div>
+      <div class="alert-row">
+        <div class="alert-input"><input type="number" id="alertPrice" placeholder="輸入目標價格 (TWD)" style="margin:0"></div>
+        <button class="alert-btn" onclick="addAlert('${m.id}')">＋ 設定警報</button>
+      </div>
+      <ul class="alert-list" id="alertList">
+        ${m.alerts.map((a, i) => `<li><span>🔔 低於 ${fmtPrice(a.price)} 時通知 ${m.current <= a.price ? '<span style="color:var(--green)">✅ 已達標</span>' : ''}</span><button class="rmv" onclick="removeAlert('${m.id}',${i})">✕</button></li>`).join('') || '<li style="color:var(--muted);justify-content:center">尚未設定任何警報</li>'}
+      </ul>
+    </div>
+  `;
+            renderChart(m, 30);
+        }
+
+        function switchTab(btn, days) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            const m = monitors.find(x => x.id === activeId);
+            if (m) renderChart(m, +days);
+        }
+
+        function renderChart(m, days) {
+            const slice = m.history.slice(-days - 1);
+            const labels = slice.map(h => h.date.slice(5));
+            const data = slice.map(h => h.price);
+            const base = getBase(m.dep, m.arr) * (m.cabin === 'premium' ? 1.4 : m.cabin === 'business' ? 3 : 1) * m.pax;
+            const avgLine = new Array(data.length).fill(Math.round(data.reduce((a, b) => a + b, 0) / data.length));
+            if (chartInst) chartInst.destroy();
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            const grad = ctx.createLinearGradient(0, 0, 0, 200);
+            grad.addColorStop(0, 'rgba(59,130,246,0.3)'); grad.addColorStop(1, 'rgba(59,130,246,0)');
+            chartInst = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: '票價', data, borderColor: '#3b82f6', backgroundColor: grad, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#3b82f6', tension: 0.4, fill: true },
+                        { label: '平均', data: avgLine, borderColor: '#f59e0b', borderWidth: 1.5, borderDash: [5, 5], pointRadius: 0, tension: 0 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } }, tooltip: { callbacks: { label: c => fmtPrice(c.raw) } } },
+                    scales: {
+                        x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#1e2d45' } },
+                        y: { ticks: { color: '#64748b', font: { size: 10 }, callback: v => fmtPrice(v) }, grid: { color: '#1e2d45' } }
+                    }
+                }
+            });
+        }
+
+        function addAlert(id) {
+            const m = monitors.find(x => x.id === id);
+            if (!m) return;
+            const price = +document.getElementById('alertPrice').value;
+            if (!price || price < 100) { toast('⚠️ 請輸入有效價格'); return; }
+            if (m.alerts.find(a => a.price === price)) { toast('⚠️ 此價格警報已存在'); return; }
+            m.alerts.push({ price });
+            save(); renderDetail(m); renderList();
+            toast('🔔 已設定 ' + fmtPrice(price) + ' 價格警報');
+        }
+
+        function removeAlert(id, idx) {
+            const m = monitors.find(x => x.id === id);
+            if (!m) return;
+            m.alerts.splice(idx, 1);
+            save(); renderDetail(m); renderList();
+        }
+
+        // ─── Live Price Updates ───────────────────────────────────
+        function liveUpdate() {
+            let changed = false;
+            monitors.forEach(m => {
+                const prev = m.current;
+                addNoise(m);
+                // Check alerts
+                m.alerts.forEach(a => {
+                    if (prev > a.price && m.current <= a.price) {
+                        toast(`🔔 ${airports[m.dep]}→${airports[m.arr]} 降至 ${fmtPrice(m.current)}！`);
+                    }
+                });
+                changed = true;
+            });
+            if (changed) { save(); renderList(); if (activeId) { const m = monitors.find(x => x.id === activeId); if (m) renderChart(m, 30); } }
+        }
+
+        // ─── Init ─────────────────────────────────────────────────
+        document.getElementById('depDate').value = (() => { const d = new Date(); d.setDate(d.getDate() + 30); return d.toISOString().split('T')[0]; })();
+
+        // Demo data
+        if (!monitors.length) {
+            const demo1base = 8500;
+            const d1 = { id: uid(), dep: 'TPE', arr: 'NRT', depDate: '2026-04-10', retDate: '2026-04-15', pax: 2, cabin: 'economy', target: 8000, history: genHistory(demo1base), alerts: [{ price: 8000 }], created: today() };
+            d1.current = d1.history[d1.history.length - 1].price;
+            const demo2base = 5500;
+            const d2 = { id: uid(), dep: 'TPE', arr: 'OKA', depDate: '2026-05-01', retDate: '', pax: 1, cabin: 'economy', target: null, history: genHistory(demo2base), alerts: [], created: today() };
+            d2.current = d2.history[d2.history.length - 1].price;
+            monitors = [d1, d2]; save();
+        }
+
+        renderList();
+        // Auto-select first
+        if (monitors.length) selectMonitor(monitors[0].id);
+
+        // Update every 8 seconds (simulate real-time)
+        setInterval(liveUpdate, 8000);
+
+        // ─── Google Flights Form ──────────────────────────────────
+        let gfTripType = 'round'; // 'round' | 'one' | 'multi'
+
+        // Init GF dates (default: depart +14 days, return +21 days)
+        (() => {
+            const d1 = new Date(); d1.setDate(d1.getDate() + 14);
+            const d2 = new Date(); d2.setDate(d2.getDate() + 21);
+            document.getElementById('gfDepDate').value = d1.toISOString().split('T')[0];
+            document.getElementById('gfRetDate').value = d2.toISOString().split('T')[0];
+        })();
+
+        function setTrip(type) {
+            gfTripType = type;
+            document.querySelectorAll('.gf-trip-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(type === 'round' ? 'gfRound' : type === 'one' ? 'gfOne' : 'gfMulti').classList.add('active');
+            // Hide return date for one-way / multi
+            document.getElementById('gfRetDateWrap').style.display = (type === 'round') ? '' : 'none';
+        }
+
+        function swapAirports() {
+            const dep = document.getElementById('gfDep');
+            const arr = document.getElementById('gfArr');
+            // Try to find the dep value in arr options
+            const depVal = dep.value;
+            const arrVal = arr.value;
+            // Set arr to depVal if option exists
+            const arrOpt = [...arr.options].find(o => o.value === depVal);
+            const depOpt = [...dep.options].find(o => o.value === arrVal);
+            if (arrOpt) arr.value = depVal;
+            if (depOpt) dep.value = arrVal;
+        }
+
+        function searchGoogleFlights() {
+            const dep = document.getElementById('gfDep').value;
+            const arr = document.getElementById('gfArr').value;
+            const depDate = document.getElementById('gfDepDate').value;   // YYYY-MM-DD
+            const retDate = document.getElementById('gfRetDate').value;
+            const adults = document.getElementById('gfAdults').value;
+            const children = document.getElementById('gfChild').value;
+            const cabin = document.getElementById('gfCabin').value;
+            // cabin map: 1=economy, 2=premium_economy, 3=business, 4=first
+            const cabinMap = { '1': 'economy', '2': 'premium_economy', '3': 'business', '4': 'first' };
+
+            if (!depDate) { toast('⚠️ 請選擇出發日期'); return; }
+
+            // Format date for Google Flights: YYYY-MM-DD → YYYY-MM-DD (already fine)
+            // Google Flights URL format
+            let url;
+            if (gfTripType === 'one') {
+                url = `https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA0LTE0agcIARIDVFBFcgcIARIDTlJUGAFwAYIBCwj___________8BQAFIAZgBAQ&curr=TWD&hl=zh-TW`;
+                // Simple deep link for one-way
+                url = `https://www.google.com/travel/flights?q=flights+from+${dep}+to+${arr}+on+${depDate}&curr=TWD&hl=zh-TW`;
+            } else if (gfTripType === 'round' && retDate) {
+                url = `https://www.google.com/travel/flights?q=flights+from+${dep}+to+${arr}+on+${depDate}+returning+${retDate}&curr=TWD&hl=zh-TW`;
+            } else {
+                url = `https://www.google.com/travel/flights?q=flights+from+${dep}+to+${arr}+on+${depDate}&curr=TWD&hl=zh-TW`;
+            }
+
+            window.open(url, '_blank');
+            toast(`🔍 正在開啟 Google Flights：${dep} → ${arr}`);
+        }
+
+        // ─── Dark / Light Mode Toggle ─────────────────────────────
+        function toggleTheme() {
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const nextTheme = isLight ? 'dark' : 'light';
+            applyTheme(nextTheme);
+            localStorage.setItem('flightTheme', nextTheme);
+        }
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('themeIcon').textContent = '☀️';
+                document.getElementById('themeLabel').textContent = '暗色模式';
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                document.getElementById('themeIcon').textContent = '🌙';
+                document.getElementById('themeLabel').textContent = '亮色模式';
+            }
+            // Re-render chart with theme-appropriate colors
+            if (activeId) {
+                const m = monitors.find(x => x.id === activeId);
+                if (m) renderChart(m, 30);
+            }
+        }
+
+        // ─── Init Theme from localStorage ────────────────────────
+        const savedTheme = localStorage.getItem('flightTheme') || 'dark';
+        applyTheme(savedTheme);
+    </script>
+</body>
+
+</html>

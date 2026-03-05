@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D36 Reels 字卡 - 土地交易量暴跌 38%</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f0f1a;
+            font-family: 'Noto Sans TC', sans-serif;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 60px;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 26px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 6px;
+            margin-bottom: 30px;
+        }
+
+        .card-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-label {
+            color: #666;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .card {
+            width: 360px;
+            height: 640px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .card .brand {
+            position: absolute;
+            bottom: 24px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            color: #ffffff;
+            opacity: 1;
+        }
+
+        .card .frame-num {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            font-size: 10px;
+            opacity: 0.4;
+            letter-spacing: 1px;
+        }
+
+        /* ===== Frame 1: Hook - 暴跌震撼 ===== */
+        .frame1 {
+            background: linear-gradient(160deg, #0d1117 0%, #2a0f0f 40%, #0d1117 100%);
+            text-align: center;
+        }
+
+        .frame1::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 60% 40%, rgba(255, 50, 50, 0.08) 0%, transparent 50%);
+        }
+
+        .frame1 .big-number {
+            font-size: 96px;
+            font-weight: 900;
+            color: #ff3333;
+            line-height: 1;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 0 40px rgba(255, 50, 50, 0.4);
+        }
+
+        .frame1 .big-number span {
+            font-size: 56px;
+            color: #ff6666;
+        }
+
+        .frame1 .sub {
+            font-size: 28px;
+            font-weight: 900;
+            color: #fff;
+            margin-top: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .frame1 .hook-line {
+            font-size: 18px;
+            color: #999;
+            margin-top: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .frame1 .brand {
+            color: #ffffff;
+        }
+
+        /* ===== Frame 2: 數據 ===== */
+        .frame2 {
+            background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+            text-align: center;
+        }
+
+        .frame2 .stat-label {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 12px;
+            letter-spacing: 3px;
+        }
+
+        .frame2 .stat-number {
+            font-size: 52px;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .frame2 .stat-unit {
+            font-size: 24px;
+            color: #ffd700;
+            font-weight: 700;
+        }
+
+        .frame2 .compare {
+            margin-top: 30px;
+            padding: 16px 24px;
+            background: rgba(255, 50, 50, 0.1);
+            border: 1px solid rgba(255, 50, 50, 0.3);
+            border-radius: 12px;
+        }
+
+        .frame2 .compare-text {
+            font-size: 20px;
+            color: #ff6666;
+            font-weight: 700;
+        }
+
+        .frame2 .source {
+            font-size: 12px;
+            color: #555;
+            margin-top: 20px;
+        }
+
+        .frame2 .brand {
+            color: #ffffff;
+        }
+
+        /* ===== Frame 3: 原因 ===== */
+        .frame3 {
+            background: linear-gradient(180deg, #0d1117 0%, #131a27 100%);
+            text-align: left;
+            padding: 40px 36px;
+        }
+
+        .frame3 .q-mark {
+            font-size: 48px;
+            color: #4a90d9;
+            font-weight: 900;
+            margin-bottom: 16px;
+        }
+
+        .frame3 .q-text {
+            font-size: 26px;
+            color: #fff;
+            font-weight: 900;
+            margin-bottom: 36px;
+        }
+
+        .frame3 .reason {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+
+        .frame3 .reason-icon {
+            font-size: 22px;
+            min-width: 30px;
+            text-align: center;
+            margin-top: 2px;
+        }
+
+        .frame3 .reason-text {
+            font-size: 18px;
+            color: #c0d0e0;
+            line-height: 1.5;
+        }
+
+        .frame3 .reason-text strong {
+            color: #fff;
+            display: block;
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .frame3 .brand {
+            color: #ffffff;
+        }
+
+        /* ===== Frame 4: 建商策略轉變 ===== */
+        .frame4 {
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            text-align: center;
+        }
+
+        .frame4 .title {
+            font-size: 22px;
+            color: #b8860b;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        .frame4 .shift-box {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .frame4 .shift-from {
+            background: rgba(255, 50, 50, 0.1);
+            border: 1px solid rgba(255, 50, 50, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .frame4 .shift-from .label {
+            font-size: 12px;
+            color: #ff6666;
+            letter-spacing: 2px;
+        }
+
+        .frame4 .shift-from .text {
+            font-size: 22px;
+            color: #ff9999;
+            font-weight: 700;
+            margin-top: 6px;
+        }
+
+        .frame4 .arrow {
+            font-size: 28px;
+            color: #ffd700;
+            text-align: center;
+        }
+
+        .frame4 .shift-to {
+            background: rgba(0, 200, 100, 0.1);
+            border: 1px solid rgba(0, 200, 100, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .frame4 .shift-to .label {
+            font-size: 12px;
+            color: #4ade80;
+            letter-spacing: 2px;
+        }
+
+        .frame4 .shift-to .text {
+            font-size: 22px;
+            color: #4ade80;
+            font-weight: 700;
+            margin-top: 6px;
+        }
+
+        .frame4 .note {
+            font-size: 14px;
+            color: #888;
+            margin-top: 16px;
+        }
+
+        .frame4 .brand {
+            color: #ffffff;
+        }
+
+        /* ===== Frame 5: 價格預測 ===== */
+        .frame5 {
+            background: linear-gradient(180deg, #0d1117 0%, #1a0f0f 100%);
+            text-align: center;
+        }
+
+        .frame5 .q {
+            font-size: 24px;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .frame5 .down-number {
+            font-size: 72px;
+            font-weight: 900;
+            color: #ff4444;
+            text-shadow: 0 0 30px rgba(255, 68, 68, 0.3);
+        }
+
+        .frame5 .down-arrow {
+            font-size: 48px;
+            color: #ff4444;
+            margin-bottom: 10px;
+        }
+
+        .frame5 .but {
+            margin-top: 28px;
+            padding: 14px 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .frame5 .but-text {
+            font-size: 18px;
+            color: #ffd700;
+            font-weight: 700;
+        }
+
+        .frame5 .brand {
+            color: #ffffff;
+        }
+
+        /* ===== Frame 6: 對地主的影響 ===== */
+        .frame6 {
+            background: linear-gradient(180deg, #0d1117 0%, #131a27 100%);
+            text-align: center;
+        }
+
+        .frame6 .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .frame6 .title {
+            font-size: 26px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 30px;
+        }
+
+        .frame6 .impact-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .frame6 .impact-item .emoji {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+
+        .frame6 .impact-text {
+            font-size: 17px;
+            color: #c0c0d0;
+            line-height: 1.5;
+        }
+
+        .frame6 .brand {
+            color: #ffffff;
+        }
+
+        /* ===== Frame 7: 建議 ===== */
+        .frame7 {
+            background: linear-gradient(135deg, #0d1117 0%, #0f1f1a 50%, #0d1117 100%);
+            text-align: center;
+        }
+
+        .frame7 .label {
+            font-size: 18px;
+            color: #a7f3d0;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+        }
+
+        .frame7 .quote-box {
+            background: rgba(74, 222, 128, 0.08);
+            border: 2px solid rgba(74, 222, 128, 0.3);
+            border-radius: 16px;
+            padding: 28px 24px;
+            margin-bottom: 24px;
+        }
+
+        .frame7 .quote-main {
+            font-size: 28px;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.5;
+        }
+
+        .frame7 .details {
+            font-size: 17px;
+            color: #d1fae5;
+            line-height: 1.8;
+        }
+
+        .frame7 .brand {
+            color: #ffffff;
+        }
+
+        /* ===== Frame 8: CTA ===== */
+        .frame8 {
+            background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+            text-align: center;
+        }
+
+        .frame8 .brand-name {
+            font-size: 26px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+        }
+
+        .frame8 .tagline {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 50px;
+            letter-spacing: 4px;
+        }
+
+        .frame8 .cta-item {
+            font-size: 20px;
+            color: #d1d5db;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .frame8 .cta-icon {
+            font-size: 22px;
+        }
+
+        .frame8 .slogan {
+            font-size: 18px;
+            color: #fbbf24;
+            font-weight: 700;
+            margin-top: 36px;
+            letter-spacing: 2px;
+        }
+
+        .frame8 .brand {
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🎬 D36 Reels 字卡｜土地交易量暴跌 38%</h1>
+    <p class="subtitle">9:16 比例 ✕ 8 張字卡 ─ 可直接截圖使用</p>
+
+    <!-- Frame 1: Hook -->
+    <div class="card-wrapper">
+        <div class="card-label">Frame 1 ／ Hook（0-3秒）</div>
+        <div class="card frame1">
+            <div class="frame-num">1 / 8</div>
+            <div
+                style="font-size:16px; color:#ff6666; letter-spacing:4px; margin-bottom:12px; position:relative; z-index:1;">
+                2025 年度</div>
+            <div class="big-number">-38<span>%</span></div>
+            <div class="sub">土地交易量暴跌</div>
+            <div class="hook-line">建商都不買地了，你還在搶？</div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+    <!-- Frame 2: 數據 -->
+    <div class="card-wrapper">
+        <div class="card-label">Frame 2 ／ 數據呈現（3-8秒）</div>
+        <div class="card frame2">
+            <div class="frame-num">2 / 8</div>
+            <div class="stat-label">2025 全年土地交易量</div>
+            <div class="stat-number">1,812</div>
+            <div class="stat-unit">億元</div>
+            <div class="compare">
+                <div class="compare-text">比前一年少了近 4 成</div>
+            </div>
+            <div class="source">資料來源：PwC 普華國際不動產</div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+    <!-- Frame 3: 原因分析 -->
+    <div class="card-wrapper">
+        <div class="card-label">Frame 3 ／ 原因分析（8-15秒）</div>
+        <div class="card frame3">
+            <div class="frame-num">3 / 8</div>
+            <div class="q-mark">❓</div>
+            <div class="q-text">建商為什麼不買地了？</div>
+            <div class="reason">
+                <div class="reason-icon">🏦</div>
+                <div class="reason-text">
+                    <strong>央行土建融緊縮</strong>
+                    貸款條件變嚴，錢借不到
+                </div>
+            </div>
+            <div class="reason">
+                <div class="reason-icon">📋</div>
+                <div class="reason-text">
+                    <strong>第七波信用管制</strong>
+                    融資門檻大幅提高
+                </div>
+            </div>
+            <div class="reason">
+                <div class="reason-icon">📉</div>
+                <div class="reason-text">
+                    <strong>市場觀望氣氛濃</strong>
+                    不購地、少推案成常態
+                </div>
+            </div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+    <!-- Frame 4: 建商策略轉變 -->
+    <div class="card-wrapper">
+        <div class="card-label">Frame 4 ／ 策略轉向（15-20秒）</div>
+        <div class="card frame4">
+            <div class="frame-num">4 / 8</div>
+            <div class="title">建商策略大轉向</div>
+            <div class="shift-box">
+                <div class="shift-from">
+                    <div class="label">以前</div>
+                    <div class="text">搶素地、拚推案量</div>
+                </div>
+                <div class="arrow">⬇️</div>
+                <div class="shift-to">
+                    <div class="label">現在</div>
+                    <div class="text">轉向都更、危老重建</div>
+                </div>
+            </div>
+            <div class="note">產權單純的案子才碰</div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+    <!-- Frame 5: 價格預測 -->
+    <div class="card-wrapper">
+        <div class="card-label">Frame 5 ／ 價格衝擊（20-26秒）</div>
+        <div class="card frame5">
+            <div class="frame-num">5 / 8</div>
+            <div class="q">土地價格會跌嗎？</div>
+            <div class="down-arrow">⬇</div>
+            <div class="down-number">-20%</div>
+            <div class="but">
+                <div class="but-text">⚡ 但精華區不一定跟著跌</div>
+            </div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+    <!-- Frame 6: 對地主的影響 -->
+    <div class="card-wrapper">
+        <div class="card-label">Frame 6 ／ 對你的影響（26-32秒）</div>
+        <div class="card frame6">
+            <div class="frame-num">6 / 8</div>
+            <div class="icon">🏠</div>
+            <div class="title">對一般地主的影響</div>
+            <div class="impact-item">
+                <div class="impact-text"><span class="emoji">📉</span> 你的地想賣，可能更難了</div>
+            </div>
+            <div class="impact-item">
+                <div class="impact-text"><span class="emoji">🙅</span> 建商不再積極收購素地</div>
+            </div>
+            <div class="impact-item">
+                <div class="impact-text"><span class="emoji">💰</span> 別期待天價行情再出現</div>
+            </div>
+            <div class="impact-item">
+                <div class="impact-text"><span class="emoji">📍</span> 地段好的還是有價值</div>
+            </div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+    <!-- Frame 7: 建議 -->
+    <div class="card-wrapper">
+        <div class="card-label">Frame 7 ／ 冷靜建議（32-40秒）</div>
+        <div class="card frame7">
+            <div class="frame-num">7 / 8</div>
+            <div class="label">💡 冷靜判斷</div>
+            <div class="quote-box">
+                <div class="quote-main">
+                    市場在修正<br>
+                    不是崩盤
+                </div>
+            </div>
+            <div class="details">
+                有好地段好條件<br>
+                照樣值錢<br><br>
+                <strong style="color:#fff;">別恐慌，也別貪心</strong>
+            </div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+    <!-- Frame 8: CTA -->
+    <div class="card-wrapper">
+        <div class="card-label">Frame 8 ／ CTA（40-45秒）</div>
+        <div class="card frame8">
+            <div class="frame-num">8 / 8</div>
+            <div class="brand-name">城獵人｜地產老實說</div>
+            <div class="tagline">這行水很深</div>
+            <div class="cta-item"><span class="cta-icon">👉</span> 追蹤不踩坑</div>
+            <div class="cta-item"><span class="cta-icon">💾</span> 收藏備用</div>
+            <div class="cta-item"><span class="cta-icon">💬</span> 留言告訴我你的看法</div>
+            <div class="slogan">聽進去省幾百萬</div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+</body>
+
+</html>

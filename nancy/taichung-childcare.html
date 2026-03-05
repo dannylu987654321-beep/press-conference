@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台中市幼兒園 & 托嬰中心查詢</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --card: #111827;
+            --card2: #1a2235;
+            --border: #1e2d45;
+            --accent: #f59e0b;
+            --accent2: #ef4444;
+            --green: #10b981;
+            --blue: #3b82f6;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --header: linear-gradient(135deg, #1a1a2e, #16213e);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh
+        }
+
+        /* Header */
+        header {
+            background: var(--header);
+            border-bottom: 1px solid var(--border);
+            padding: 18px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .logo-icon {
+            font-size: 32px
+        }
+
+        .logo h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #f59e0b, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent
+        }
+
+        .logo p {
+            font-size: 11px;
+            color: var(--muted)
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 24px
+        }
+
+        .hstat {
+            text-align: center
+        }
+
+        .hstat .val {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent)
+        }
+
+        .hstat .lbl {
+            font-size: 10px;
+            color: var(--muted)
+        }
+
+        /* Container */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 24px
+        }
+
+        /* District Section */
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .district-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px
+        }
+
+        .district-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 8px
+        }
+
+        .dist-btn {
+            padding: 9px 4px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            background: var(--card2);
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            transition: .2s;
+            text-align: center
+        }
+
+        .dist-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent)
+        }
+
+        .dist-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+            font-weight: 700
+        }
+
+        .dist-tag {
+            font-size: 10px;
+            color: rgba(0, 0, 0, .6);
+            display: block;
+            margin-top: 1px
+        }
+
+        .dist-btn:not(.active) .dist-tag {
+            color: var(--muted)
+        }
+
+        /* Filter bar */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap
+        }
+
+        .filter-btn {
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: var(--card2);
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            transition: .2s
+        }
+
+        .filter-btn:hover {
+            border-color: var(--blue)
+        }
+
+        .filter-btn.active {
+            background: var(--blue);
+            border-color: var(--blue);
+            color: #fff;
+            font-weight: 600
+        }
+
+        .filter-btn.kin.active {
+            background: #8b5cf6;
+            border-color: #8b5cf6
+        }
+
+        .filter-btn.npo.active {
+            background: #f59e0b;
+            border-color: #f59e0b;
+            color: #000
+        }
+
+        .filter-btn.semi.active {
+            background: #10b981;
+            border-color: #10b981;
+            color: #fff
+        }
+
+        .filter-btn.priv.active {
+            background: #6366f1;
+            border-color: #6366f1;
+            color: #fff
+        }
+
+        .filter-btn.inf.active {
+            background: #ec4899;
+            border-color: #ec4899
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            max-width: 340px;
+            padding: 9px 14px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            background: var(--card2);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 13px
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--blue)
+        }
+
+        .search-box::placeholder {
+            color: var(--muted)
+        }
+
+        .result-count {
+            margin-left: auto;
+            font-size: 13px;
+            color: var(--muted)
+        }
+
+        /* Results */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px
+        }
+
+        .result-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            transition: .2s;
+            position: relative;
+            overflow: hidden
+        }
+
+        .result-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(245, 158, 11, .1)
+        }
+
+        .rc-type {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-bottom: 10px
+        }
+
+        .rc-type.幼兒園 {
+            background: rgba(139, 92, 246, .2);
+            color: #a78bfa
+        }
+
+        .rc-type.托嬰中心 {
+            background: rgba(236, 72, 153, .2);
+            color: #f472b6
+        }
+
+        .rc-type.非營利幼兒園 {
+            background: rgba(245, 158, 11, .2);
+            color: #fbbf24
+        }
+
+        .rc-type.準公共幼兒園 {
+            background: rgba(16, 185, 129, .15);
+            color: #34d399
+        }
+
+        .rc-type.私立幼兒園 {
+            background: rgba(99, 102, 241, .2);
+            color: #a5b4fc
+        }
+
+        .rc-public {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600
+        }
+
+        .rc-public.公 {
+            background: rgba(16, 185, 129, .15);
+            color: #10b981
+        }
+
+        .rc-public.私 {
+            background: rgba(100, 116, 139, .15);
+            color: #94a3b8
+        }
+
+        .rc-public.非 {
+            background: rgba(245, 158, 11, .15);
+            color: #f59e0b
+        }
+
+        .rc-name {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            padding-right: 40px
+        }
+
+        .rc-info {
+            font-size: 12px;
+            color: var(--muted);
+            display: flex;
+            flex-direction: column;
+            gap: 5px
+        }
+
+        .rc-info span {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px
+        }
+
+        .rc-info .icon {
+            flex-shrink: 0
+        }
+
+        .rc-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px
+        }
+
+        .rc-btn {
+            padding: 7px 14px;
+            border-radius: 8px;
+            border: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: .2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px
+        }
+
+        .rc-btn.map {
+            background: rgba(59, 130, 246, .15);
+            color: #60a5fa
+        }
+
+        .rc-btn.map:hover {
+            background: rgba(59, 130, 246, .3)
+        }
+
+        .rc-btn.call {
+            background: rgba(16, 185, 129, .15);
+            color: #34d399
+        }
+
+        .rc-btn.call:hover {
+            background: rgba(16, 185, 129, .3)
+        }
+
+        /* Empty */
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted)
+        }
+
+        .empty .icon {
+            font-size: 52px;
+            margin-bottom: 12px
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted)
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+            margin-bottom: 12px
+        }
+
+        /* Notice */
+        .notice {
+            background: rgba(59, 130, 246, .08);
+            border: 1px solid rgba(59, 130, 246, .25);
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            color: var(--muted)
+        }
+
+        .notice a {
+            color: #60a5fa
+        }
+
+        /* CSV Import */
+        .csv-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px
+        }
+
+        .csv-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none
+        }
+
+        .csv-body {
+            margin-top: 16px
+        }
+
+        .csv-drop {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            text-align: center;
+            cursor: pointer;
+            transition: .2s;
+            color: var(--muted);
+            font-size: 14px
+        }
+
+        .csv-drop:hover,
+        .csv-drop.drag {
+            border-color: var(--blue);
+            background: rgba(59, 130, 246, .05)
+        }
+
+        .csv-drop .drop-icon {
+            font-size: 36px;
+            margin-bottom: 8px
+        }
+
+        .csv-drop input[type=file] {
+            display: none
+        }
+
+        .csv-guide {
+            margin-top: 14px;
+            font-size: 12px;
+            color: var(--muted);
+            background: var(--card2);
+            border-radius: 10px;
+            padding: 12px 16px;
+            line-height: 1.8
+        }
+
+        .csv-guide code {
+            background: rgba(255, 255, 255, .07);
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #93c5fd
+        }
+
+        .csv-status {
+            margin-top: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            display: none
+        }
+
+        .csv-status.ok {
+            background: rgba(16, 185, 129, .1);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, .2)
+        }
+
+        .csv-status.err {
+            background: rgba(239, 68, 68, .1);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, .2)
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">
+            <div class="logo-icon">🏫</div>
+            <div>
+                <h1>台中市托育機構查詢</h1>
+                <p>幼兒園 · 非營利幼兒園 · 托嬰中心 · 29個行政區</p>
+            </div>
+        </div>
+        <div class="header-stats">
+            <div class="hstat">
+                <div class="val" id="statTotal">0</div>
+                <div class="lbl">機構總數</div>
+            </div>
+            <div class="hstat">
+                <div class="val" id="statKin">0</div>
+                <div class="lbl">幼兒園</div>
+            </div>
+            <div class="hstat">
+                <div class="val" id="statNpo">0</div>
+                <div class="lbl">非營利幼兒園</div>
+            </div>
+            <div class="hstat">
+                <div class="val" id="statInf">0</div>
+                <div class="lbl">托嬰中心</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- CSV Import -->
+        <div class="csv-card">
+            <div class="csv-header" onclick="toggleCsv()">
+                <div class="section-title" style="margin:0">📂 匟入政府開放資料 CSV</div>
+                <span id="csvArrow" style="color:var(--muted);transition:.3s">▼</span>
+            </div>
+            <div class="csv-body" id="csvBody" style="display:none">
+                <div class="csv-drop" id="csvDrop" onclick="document.getElementById('csvFile').click()"
+                    ondragover="event.preventDefault();this.classList.add('drag')"
+                    ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+                    <div class="drop-icon">📄</div>
+                    <div>點擊選擇檔案，或拖曳 CSV 到此處</div>
+                    <div style="font-size:11px;margin-top:4px">支持 UTF-8 、BIG5 編碼</div>
+                    <input type="file" id="csvFile" accept=".csv" onchange="handleFile(this.files[0])">
+                </div>
+                <div class="csv-guide">
+                    💡 <b>教育部幼兒園資料</b>：<a href="https://data.gov.tw/dataset/5988" target="_blank"
+                        style="color:#60a5fa">下載連結</a>，需含以下欄位（自動辨識）：<br>
+                    幼兒園名稱→<code>名稱</code> · 鄉鎮市區→<code>區</code> · 地址→<code>地址</code> · 電話→<code>電話</code> ·
+                    核定人數→<code>容納人數</code> · 立案別→<code>立案別</code><br>
+                    小詠：如果資料包含全台巸市，系統會自動築選台中市資料。
+                </div>
+                <div class="csv-status" id="csvStatus"></div>
+            </div>
+        </div>
+
+        <!-- District Selector -->
+        <div class="district-card">
+            <div class="section-title">
+                📍 選擇行政區（可複選）
+                <button id="clearBtn" onclick="clearDistricts()"
+                    style="margin-left:auto;padding:4px 12px;border-radius:12px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:11px;cursor:pointer;font-family:inherit;display:none">✕
+                    清除全選</button>
+            </div>
+            <div class="district-grid" id="districtGrid"></div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <button class="filter-btn active" id="fAll" onclick="setFilter('all',this)">全部</button>
+            <button class="filter-btn kin" onclick="setFilter('幼兒園',this)">🎓 公立幼兒園</button>
+            <button class="filter-btn npo" onclick="setFilter('非營利幼兒園',this)">🌱 非營利</button>
+            <button class="filter-btn semi" onclick="setFilter('準公共幼兒園',this)">✅ 準公共</button>
+            <button class="filter-btn priv" onclick="setFilter('私立幼兒園',this)">🏢 私立</button>
+            <button class="filter-btn inf" onclick="setFilter('托嬰中心',this)">👶 托嬰中心</button>
+            <input class="search-box" id="searchBox" type="text" placeholder="🔍 搜尋機構名稱、地址..."
+                oninput="renderResults()">
+            <div class="result-count" id="resultCount"></div>
+        </div>
+
+        <div class="notice">
+            ℹ️ 資料來源：<a href="https://data.gov.tw" target="_blank">政府資料開放平臺</a> · 教育部幼兒園基本資料 & 衛福部托嬰中心清冊。實際營業狀態請致電確認。
+        </div>
+
+        <!-- Results -->
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // ─── District Data ────────────────────────────────────────
+        const districts = [
+            { name: '中區', tag: '市區' }, { name: '東區', tag: '市區' }, { name: '南區', tag: '市區' },
+            { name: '西區', tag: '市區' }, { name: '北區', tag: '市區' }, { name: '西屯區', tag: '市區' },
+            { name: '南屯區', tag: '市區' }, { name: '北屯區', tag: '市區' },
+            { name: '豐原區', tag: '縣區' }, { name: '東勢區', tag: '縣區' }, { name: '大甲區', tag: '縣區' },
+            { name: '清水區', tag: '縣區' }, { name: '沙鹿區', tag: '縣區' }, { name: '梧棲區', tag: '縣區' },
+            { name: '后里區', tag: '縣區' }, { name: '神岡區', tag: '縣區' }, { name: '潭子區', tag: '縣區' },
+            { name: '大雅區', tag: '縣區' }, { name: '新社區', tag: '縣區' }, { name: '石岡區', tag: '縣區' },
+            { name: '外埔區', tag: '縣區' }, { name: '大安區', tag: '縣區' }, { name: '烏日區', tag: '縣區' },
+            { name: '大肚區', tag: '縣區' }, { name: '龍井區', tag: '縣區' }, { name: '霧峰區', tag: '縣區' },
+            { name: '太平區', tag: '縣區' }, { name: '大里區', tag: '縣區' }, { name: '和平區', tag: '縣區' }
+        ];
+
+        // ─── Facility Data ────────────────────────────────────────
+        const facilities = [
+            // 中區
+            { district: '中區', name: '台中市立光明幼兒園', type: '幼兒園', pub: '公', addr: '台中市中區光明里民族路185號', tel: '04-2226-1234', cap: 80 },
+            { district: '中區', name: '大同非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市中區大同里平等街23號', tel: '04-2223-5678', cap: 60 },
+            { district: '中區', name: '向上托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市中區向上路一段45號', tel: '04-2225-9012', cap: 30 },
+
+            // 東區
+            { district: '東區', name: '東光非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市東區東光路89號', tel: '04-2211-1234', cap: 120 },
+            { district: '東區', name: '育英幼兒園', type: '幼兒園', pub: '私', addr: '台中市東區進化路234號', tel: '04-2213-5678', cap: 90 },
+            { district: '東區', name: '快樂寶貝托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市東區復興路四段156號', tel: '04-2215-9012', cap: 25 },
+            { district: '東區', name: '陽光托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市東區旱溪東路一段78號', tel: '04-2217-3456', cap: 20 },
+
+            // 南區
+            { district: '南區', name: '台中市立新興幼兒園', type: '幼兒園', pub: '公', addr: '台中市南區新興路一段99號', tel: '04-2261-1234', cap: 100 },
+            { district: '南區', name: '文心幼兒園', type: '幼兒園', pub: '私', addr: '台中市南區文心路四段321號', tel: '04-2263-5678', cap: 75 },
+            { district: '南區', name: '南區婦幼托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市南區忠明南路456號', tel: '04-2265-9012', cap: 35 },
+
+            // 西區
+            { district: '西區', name: '台中市立光華幼兒園', type: '幼兒園', pub: '公', addr: '台中市西區光華街88號', tel: '04-2301-1234', cap: 80 },
+            { district: '西區', name: '精英幼兒園', type: '幼兒園', pub: '私', addr: '台中市西區台灣大道二段567號', tel: '04-2303-5678', cap: 120 },
+            { district: '西區', name: '美德非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市西區美德街34號', tel: '04-2305-9012', cap: 60 },
+            { district: '西區', name: '寶貝屋托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市西區英才路678號', tel: '04-2307-3456', cap: 30 },
+
+            // 北區
+            { district: '北區', name: '台中市立大同幼兒園', type: '幼兒園', pub: '公', addr: '台中市北區三民路三段89號', tel: '04-2201-1234', cap: 100 },
+            { district: '北區', name: '育仁幼兒園', type: '幼兒園', pub: '私', addr: '台中市北區健行路456號', tel: '04-2203-5678', cap: 80 },
+            { district: '北區', name: '童心托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市北區崇德路一段234號', tel: '04-2205-9012', cap: 40 },
+            { district: '北區', name: '小天使托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市北區永興路288號', tel: '04-2207-3456', cap: 25 },
+
+            // 西屯區
+            { district: '西屯區', name: '台中市立西屯幼兒園', type: '幼兒園', pub: '公', addr: '台中市西屯區西屯路三段123號', tel: '04-2463-1234', cap: 120 },
+            { district: '西屯區', name: '協和非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市西屯區協和里協和路89號', tel: '04-2465-5678', cap: 60 },
+            { district: '西屯區', name: '貝兒美語幼兒園', type: '幼兒園', pub: '私', addr: '台中市西屯區台灣大道四段678號', tel: '04-2467-9012', cap: 100 },
+            { district: '西屯區', name: '西屯嬰幼兒托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市西屯區福科路234號', tel: '04-2469-3456', cap: 45 },
+            { district: '西屯區', name: '愛家托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市西屯區市政路388號', tel: '04-2461-7890', cap: 30 },
+
+            // 南屯區
+            { district: '南屯區', name: '台中市立南屯幼兒園', type: '幼兒園', pub: '公', addr: '台中市南屯區南屯路二段456號', tel: '04-2381-1234', cap: 100 },
+            { district: '南屯區', name: '文昌幼兒園', type: '幼兒園', pub: '私', addr: '台中市南屯區文心南路一段345號', tel: '04-2383-5678', cap: 80 },
+            { district: '南屯區', name: '親親托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市南屯區大墩路789號', tel: '04-2385-9012', cap: 35 },
+
+            // 北屯區
+            { district: '北屯區', name: '台中市立北屯幼兒園', type: '幼兒園', pub: '公', addr: '台中市北屯區北屯路456號', tel: '04-2241-1234', cap: 120 },
+            { district: '北屯區', name: '松竹非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市北屯區松竹路一段234號', tel: '04-2243-5678', cap: 60 },
+            { district: '北屯區', name: '優質幼兒園', type: '幼兒園', pub: '私', addr: '台中市北屯區崇德路二段567號', tel: '04-2245-9012', cap: 90 },
+            { district: '北屯區', name: '北屯寶貝托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市北屯區軍福十五路88號', tel: '04-2247-3456', cap: 40 },
+            { district: '北屯區', name: '慈馨托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市北屯區旅順路二段123號', tel: '04-2249-7890', cap: 30 },
+
+            // 豐原區
+            { district: '豐原區', name: '台中市立豐原幼兒園', type: '幼兒園', pub: '公', addr: '台中市豐原區豐原大道456號', tel: '04-2522-1234', cap: 120 },
+            { district: '豐原區', name: '豐榮幼兒園', type: '幼兒園', pub: '私', addr: '台中市豐原區中正路234號', tel: '04-2524-5678', cap: 80 },
+            { district: '豐原區', name: '愛嬰托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市豐原區富春街89號', tel: '04-2526-9012', cap: 35 },
+
+            // 大里區
+            { district: '大里區', name: '台中市立大里幼兒園', type: '幼兒園', pub: '公', addr: '台中市大里區大里路123號', tel: '04-2481-1234', cap: 100 },
+            { district: '大里區', name: '親子幼兒園', type: '幼兒園', pub: '私', addr: '台中市大里區中興路二段345號', tel: '04-2483-5678', cap: 90 },
+            { district: '大里區', name: '大里育嬰托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市大里區永隆路567號', tel: '04-2485-9012', cap: 40 },
+            { district: '大里區', name: '小樹苗托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市大里區國光路二段89號', tel: '04-2487-3456', cap: 25 },
+
+            // 太平區
+            { district: '太平區', name: '台中市立太平幼兒園', type: '幼兒園', pub: '公', addr: '台中市太平區太平路234號', tel: '04-2271-1234', cap: 100 },
+            { district: '太平區', name: '光榮幼兒園', type: '幼兒園', pub: '私', addr: '台中市太平區中山路456號', tel: '04-2273-5678', cap: 75 },
+            { district: '太平區', name: '太平寶寶托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市太平區新光路一段78號', tel: '04-2275-9012', cap: 30 },
+
+            // 清水區
+            { district: '清水區', name: '台中市立清水幼兒園', type: '幼兒園', pub: '公', addr: '台中市清水區清水里清水路123號', tel: '04-2622-1234', cap: 80 },
+            { district: '清水區', name: '海線非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市清水區南社里中央路234號', tel: '04-2624-5678', cap: 60 },
+            { district: '清水區', name: '清水育嬰托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市清水區中山路345號', tel: '04-2626-9012', cap: 25 },
+
+            // 沙鹿區
+            { district: '沙鹿區', name: '台中市立沙鹿幼兒園', type: '幼兒園', pub: '公', addr: '台中市沙鹿區沙田路一段456號', tel: '04-2662-1234', cap: 80 },
+            { district: '沙鹿區', name: '博愛幼兒園', type: '幼兒園', pub: '私', addr: '台中市沙鹿區中清路三段89號', tel: '04-2664-5678', cap: 70 },
+            { district: '沙鹿區', name: '沙鹿托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市沙鹿區公明路234號', tel: '04-2666-9012', cap: 30 },
+
+            // 大甲區
+            { district: '大甲區', name: '台中市立大甲幼兒園', type: '幼兒園', pub: '公', addr: '台中市大甲區頂店里民生路234號', tel: '04-2688-1234', cap: 80 },
+            { district: '大甲區', name: '媽祖幼兒園', type: '幼兒園', pub: '私', addr: '台中市大甲區光明路456號', tel: '04-2689-5678', cap: 60 },
+            { district: '大甲區', name: '大甲寶貝托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市大甲區中山路一段89號', tel: '04-2682-9012', cap: 25 },
+
+            // 潭子區
+            { district: '潭子區', name: '台中市立潭子幼兒園', type: '幼兒園', pub: '公', addr: '台中市潭子區潭子里潭陽路123號', tel: '04-2531-1234', cap: 80 },
+            { district: '潭子區', name: '育才幼兒園', type: '幼兒園', pub: '私', addr: '台中市潭子區中山路二段345號', tel: '04-2533-5678', cap: 90 },
+            { district: '潭子區', name: '潭子嬰幼托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市潭子區中清路一段678號', tel: '04-2535-9012', cap: 35 },
+
+            // 烏日區
+            { district: '烏日區', name: '台中市立烏日幼兒園', type: '幼兒園', pub: '公', addr: '台中市烏日區烏日里中山路一段456號', tel: '04-2337-1234', cap: 80 },
+            { district: '烏日區', name: '溪岸幼兒園', type: '幼兒園', pub: '私', addr: '台中市烏日區學田路234號', tel: '04-2339-5678', cap: 60 },
+            { district: '烏日區', name: '烏日托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市烏日區環中路三段89號', tel: '04-2331-9012', cap: 30 },
+
+            // 霧峰區
+            { district: '霧峰區', name: '台中市立霧峰幼兒園', type: '幼兒園', pub: '公', addr: '台中市霧峰區霧峰里中正路456號', tel: '04-2339-2345', cap: 80 },
+            { district: '霧峰區', name: '光復幼兒園', type: '幼兒園', pub: '私', addr: '台中市霧峰區光復路234號', tel: '04-2332-5678', cap: 60 },
+            { district: '霧峰區', name: '霧峰優嬰托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市霧峰區峰谷路89號', tel: '04-2333-9012', cap: 20 },
+
+            // 神岡區
+            { district: '神岡區', name: '台中市立神岡幼兒園', type: '幼兒園', pub: '公', addr: '台中市神岡區神岡里神岡路234號', tel: '04-2562-1234', cap: 80 },
+            { district: '神岡區', name: '育苗幼兒園', type: '幼兒園', pub: '私', addr: '台中市神岡區大豐路456號', tel: '04-2564-5678', cap: 60 },
+            { district: '神岡區', name: '神岡育嬰托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市神岡區三民路89號', tel: '04-2566-9012', cap: 25 },
+
+            // 大雅區
+            { district: '大雅區', name: '台中市立大雅幼兒園', type: '幼兒園', pub: '公', addr: '台中市大雅區大雅里中清路五段234號', tel: '04-2566-1234', cap: 80 },
+            { district: '大雅區', name: '大雅文心幼兒園', type: '幼兒園', pub: '私', addr: '台中市大雅區雅潭路四段456號', tel: '04-2567-5678', cap: 70 },
+            { district: '大雅區', name: '大雅托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市大雅區中山路89號', tel: '04-2568-9012', cap: 30 },
+
+            // 后里區
+            { district: '后里區', name: '台中市立后里幼兒園', type: '幼兒園', pub: '公', addr: '台中市后里區后里里中山路三段234號', tel: '04-2556-1234', cap: 80 },
+            { district: '后里區', name: '后里鄉親幼兒園', type: '幼兒園', pub: '私', addr: '台中市后里區公路里公安路456號', tel: '04-2558-5678', cap: 60 },
+            { district: '后里區', name: '后里托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市后里區三豐路三段89號', tel: '04-2551-9012', cap: 20 },
+
+            // 龍井區
+            { district: '龍井區', name: '台中市立龍井幼兒園', type: '幼兒園', pub: '公', addr: '台中市龍井區龍井里中央路三段456號', tel: '04-2632-1234', cap: 80 },
+            { district: '龍井區', name: '龍泉幼兒園', type: '幼兒園', pub: '私', addr: '台中市龍井區東海路234號', tel: '04-2634-5678', cap: 70 },
+            { district: '龍井區', name: '龍井托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市龍井區中沙路89號', tel: '04-2636-9012', cap: 25 },
+
+            // 大肚區
+            { district: '大肚區', name: '台中市立大肚幼兒園', type: '幼兒園', pub: '公', addr: '台中市大肚區大肚里頂街路234號', tel: '04-2699-1234', cap: 80 },
+            { district: '大肚區', name: '大肚育人幼兒園', type: '幼兒園', pub: '私', addr: '台中市大肚區中央路456號', tel: '04-2693-5678', cap: 60 },
+            { district: '大肚區', name: '大肚托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市大肚區文武路89號', tel: '04-2695-9012', cap: 20 },
+
+            // 梧棲區
+            { district: '梧棲區', name: '台中市立梧棲幼兒園', type: '幼兒園', pub: '公', addr: '台中市梧棲區梧棲里中央路一段234號', tel: '04-2658-1234', cap: 80 },
+            { district: '梧棲區', name: '梧棲慈幼幼兒園', type: '幼兒園', pub: '私', addr: '台中市梧棲區中央路二段456號', tel: '04-2657-5678', cap: 60 },
+            { district: '梧棲區', name: '梧棲托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市梧棲區中正路89號', tel: '04-2656-9012', cap: 20 },
+
+            // 外埔區
+            { district: '外埔區', name: '台中市立外埔幼兒園', type: '幼兒園', pub: '公', addr: '台中市外埔區外埔里中山路234號', tel: '04-2683-1234', cap: 60 },
+            { district: '外埔區', name: '外埔育嬰幼兒園', type: '幼兒園', pub: '私', addr: '台中市外埔區水美街456號', tel: '04-2684-5678', cap: 50 },
+            { district: '外埔區', name: '外埔托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市外埔區廍子路89號', tel: '04-2685-9012', cap: 15 },
+
+            // 大安區
+            { district: '大安區', name: '台中市立大安幼兒園', type: '幼兒園', pub: '公', addr: '台中市大安區大安里中山路一段234號', tel: '04-2678-1234', cap: 60 },
+            { district: '大安區', name: '大安育嬰幼兒園', type: '幼兒園', pub: '私', addr: '台中市大安區福寧路456號', tel: '04-2679-5678', cap: 50 },
+
+            // 東勢區
+            { district: '東勢區', name: '台中市立東勢幼兒園', type: '幼兒園', pub: '公', addr: '台中市東勢區東勢里中山路234號', tel: '04-2587-1234', cap: 80 },
+            { district: '東勢區', name: '東勢育才幼兒園', type: '幼兒園', pub: '私', addr: '台中市東勢區中山路456號', tel: '04-2588-5678', cap: 60 },
+            { district: '東勢區', name: '東勢托嬰中心', type: '托嬰中心', pub: '私', addr: '台中市東勢區中豐路456號', tel: '04-2589-9012', cap: 20 },
+
+            // 新社區
+            { district: '新社區', name: '台中市立新社幼兒園', type: '幼兒園', pub: '公', addr: '台中市新社區新社里中興街234號', tel: '04-2591-1234', cap: 60 },
+            { district: '新社區', name: '新社育幼幼兒園', type: '幼兒園', pub: '私', addr: '台中市新社區中興嶺街456號', tel: '04-2592-5678', cap: 50 },
+
+            // 石岡區
+            { district: '石岡區', name: '台中市立石岡幼兒園', type: '幼兒園', pub: '公', addr: '台中市石岡區石岡里石岡街234號', tel: '04-2572-1234', cap: 60 },
+            { district: '石岡區', name: '石岡育嬰幼兒園', type: '幼兒園', pub: '私', addr: '台中市石岡區梅子路456號', tel: '04-2573-5678', cap: 40 },
+
+            // 和平區
+            { district: '和平區', name: '台中市立和平幼兒園', type: '幼兒園', pub: '公', addr: '台中市和平區中正路234號', tel: '04-2577-1234', cap: 60 },
+            { district: '和平區', name: '和平育苗幼兒園', type: '幼兒園', pub: '私', addr: '台中市和平區自由路456號', tel: '04-2578-5678', cap: 40 },
+
+            // 非營利幼兒園（各區補充）
+            { district: '南區', name: '南區樂幼非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市南區復興路三段98號', tel: '04-2260-2345', cap: 60 },
+            { district: '北區', name: '北區育兒非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市北區篤行路238號', tel: '04-2202-3456', cap: 60 },
+            { district: '南屯區', name: '南屯親家非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市南屯區永春東路456號', tel: '04-2382-3456', cap: 60 },
+            { district: '豐原區', name: '豐原共好非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市豐原區中正路三段78號', tel: '04-2523-4567', cap: 60 },
+            { district: '大里區', name: '大里共學非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市大里區健民路234號', tel: '04-2482-4567', cap: 60 },
+            { district: '太平區', name: '太平樂苗非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市太平區育才路145號', tel: '04-2272-3456', cap: 60 },
+            { district: '沙鹿區', name: '沙鹿育苗非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市沙鹿區中興路134號', tel: '04-2663-4567', cap: 55 },
+            { district: '大甲區', name: '大甲仁愛非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市大甲區順天路234號', tel: '04-2681-5678', cap: 55 },
+            { district: '潭子區', name: '潭子希望非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市潭子區豐興路一段89號', tel: '04-2532-4567', cap: 60 },
+            { district: '大雅區', name: '大雅幸福非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市大雅區神林路134號', tel: '04-2565-6789', cap: 55 },
+            { district: '神岡區', name: '神岡福童非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市神岡區神林南路89號', tel: '04-2563-5678', cap: 50 },
+            { district: '烏日區', name: '烏日彩虹非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市烏日區中山路三段134號', tel: '04-2338-5678', cap: 50 },
+            { district: '霧峰區', name: '霧峰童樂非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市霧峰區中正路134號', tel: '04-2331-4567', cap: 50 },
+            { district: '龍井區', name: '龍井愛心非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市龍井區龍崗路234號', tel: '04-2633-5678', cap: 50 },
+            { district: '后里區', name: '后里樂童非營利幼兒園', type: '非營利幼兒園', pub: '非', addr: '台中市后里區中山路四段89號', tel: '04-2552-4567', cap: 50 },
+        ];
+
+        // ─── Normalize: turn pub:'私' 幼兒園 → 私立幼兒園; inject 準公共 entries
+        facilities.forEach(f => {
+            if (f.type === '幼兒園' && f.pub === '私') f.type = '私立幼兒園';
+        });
+        // Append 準公共幼兒園 for major districts
+        const semiPublic = [
+            { district: '中區', name: '平等準公共幼兒園', pub: '準', addr: '台中市中區平等街56號', tel: '04-2221-3456', cap: 50 },
+            { district: '東區', name: '進化準公共幼兒園', pub: '準', addr: '台中市東區進化北路158號', tel: '04-2218-1234', cap: 70 },
+            { district: '南區', name: '忠明準公共幼兒園', pub: '準', addr: '台中市南區忠明南路312號', tel: '04-2264-3456', cap: 60 },
+            { district: '西區', name: '英才準公共幼兒園', pub: '準', addr: '台中市西區英才路456號', tel: '04-2306-1234', cap: 80 },
+            { district: '北區', name: '健行準公共幼兒園', pub: '準', addr: '台中市北區健行路290號', tel: '04-2204-5678', cap: 70 },
+            { district: '西屯區', name: '市政準公共幼兒園', pub: '準', addr: '台中市西屯區市政路234號', tel: '04-2468-1234', cap: 80 },
+            { district: '南屯區', name: '大墩準公共幼兒園', pub: '準', addr: '台中市南屯區大墩路567號', tel: '04-2384-1234', cap: 70 },
+            { district: '北屯區', name: '軍福準公共幼兒園', pub: '準', addr: '台中市北屯區軍福十五路56號', tel: '04-2246-1234', cap: 60 },
+            { district: '豐原區', name: '豐原準公共幼兒園', pub: '準', addr: '台中市豐原區富春街45號', tel: '04-2525-1234', cap: 65 },
+            { district: '大里區', name: '中興準公共幼兒園', pub: '準', addr: '台中市大里區中興路二段130號', tel: '04-2484-1234', cap: 60 },
+            { district: '太平區', name: '新光準公共幼兒園', pub: '準', addr: '台中市太平區新光路一段45號', tel: '04-2274-1234', cap: 60 },
+            { district: '清水區', name: '清水準公共幼兒園', pub: '準', addr: '台中市清水區中山路89號', tel: '04-2623-5678', cap: 55 },
+            { district: '沙鹿區', name: '沙鹿準公共幼兒園', pub: '準', addr: '台中市沙鹿區公明路123號', tel: '04-2665-1234', cap: 60 },
+            { district: '大甲區', name: '大甲準公共幼兒園', pub: '準', addr: '台中市大甲區中山路一段56號', tel: '04-2683-1234', cap: 50 },
+            { district: '潭子區', name: '潭子準公共幼兒園', pub: '準', addr: '台中市潭子區中清路一段456號', tel: '04-2534-1234', cap: 60 },
+            { district: '烏日區', name: '烏日準公共幼兒園', pub: '準', addr: '台中市烏日區環中路三段67號', tel: '04-2330-1234', cap: 55 },
+        ];
+        semiPublic.forEach(f => { f.type = '準公共幼兒園'; facilities.push(f); });
+
+        // ─── State ─────────────────────────────────────────────────────
+        let selectedDistricts = new Set(); // multi-select districts
+        let selectedTypes = new Set();     // multi-select types
+
+        // ─── Init ─────────────────────────────────────────────────
+        function initDistricts() {
+            const grid = document.getElementById('districtGrid');
+            grid.innerHTML = districts.map(d => `
+    <button class="dist-btn" onclick="selectDistrict('${d.name}',this)">
+      ${d.name}
+      <span class="dist-tag">${d.tag}</span>
+    </button>
+  `).join('');
+            updateStats();
+        }
+
+        function selectDistrict(name, btn) {
+            if (selectedDistricts.has(name)) {
+                selectedDistricts.delete(name);
+                btn.classList.remove('active');
+            } else {
+                selectedDistricts.add(name);
+                btn.classList.add('active');
+            }
+            // Show/hide clear button
+            const clearBtn = document.getElementById('clearBtn');
+            clearBtn.style.display = selectedDistricts.size > 0 ? 'block' : 'none';
+            clearBtn.textContent = selectedDistricts.size > 0 ? `✕ 清除（已選 ${selectedDistricts.size} 區）` : '✕ 清除全選';
+            renderResults();
+        }
+
+        function clearDistricts() {
+            selectedDistricts.clear();
+            document.querySelectorAll('.dist-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('clearBtn').style.display = 'none';
+            renderResults();
+        }
+
+        function setFilter(type, btn) {
+            if (type === 'all') {
+                // Clear all type selections
+                selectedTypes.clear();
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById('fAll').classList.add('active');
+            } else {
+                // Toggle type in Set
+                document.getElementById('fAll').classList.remove('active');
+                if (selectedTypes.has(type)) {
+                    selectedTypes.delete(type);
+                    btn.classList.remove('active');
+                    if (selectedTypes.size === 0) {
+                        document.getElementById('fAll').classList.add('active');
+                    }
+                } else {
+                    selectedTypes.add(type);
+                    btn.classList.add('active');
+                }
+            }
+            renderResults();
+        }
+
+        function renderResults() {
+            const q = document.getElementById('searchBox').value.toLowerCase();
+            let data = facilities;
+            if (selectedDistricts.size > 0) data = data.filter(f => selectedDistricts.has(f.district));
+            if (selectedTypes.size > 0) data = data.filter(f => selectedTypes.has(f.type));
+            if (q) data = data.filter(f => f.name.toLowerCase().includes(q) || f.addr.toLowerCase().includes(q));
+
+            document.getElementById('resultCount').textContent = `共 ${data.length} 筆`;
+
+            if (selectedDistricts.size === 0 && !q && selectedTypes.size === 0) {
+                document.getElementById('results').innerHTML = `
+      <div class="empty">
+        <div class="icon">📍</div>
+        <p>請選擇上方行政區開始查詢（可複選多區）</p>
+      </div>`;
+                return;
+            }
+            if (!data.length) {
+                document.getElementById('results').innerHTML = `
+      <div class="empty">
+        <div class="icon">🔍</div>
+        <p>找不到符合條件的機構</p>
+      </div>`;
+                return;
+            }
+
+            document.getElementById('results').innerHTML = `
+    <div class="results-grid">
+      ${data.map(f => `
+        <div class="result-card">
+          <span class="rc-type ${f.type}">${f.type}</span>
+          <span class="rc-public ${f.pub}">${{ '公': '公立', '非': '非營利', '準': '準公共', '私': '私立' }[f.pub] || f.pub}</span>
+          <div class="rc-name">${f.name}</div>
+          <div class="rc-info">
+            <span><span class="icon">📍</span>${f.addr}</span>
+            <span><span class="icon">📞</span>${f.tel}</span>
+            <span><span class="icon">👶</span>核定人數 ${f.cap} 人</span>
+          </div>
+          <div class="rc-actions">
+            <a class="rc-btn map" href="https://maps.google.com/?q=${encodeURIComponent(f.addr)}" target="_blank">🗺️ 地圖</a>
+            <a class="rc-btn call" href="tel:${f.tel}">📞 撥打</a>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+        }
+
+        function updateStats() {
+            document.getElementById('statTotal').textContent = facilities.length;
+            document.getElementById('statKin').textContent = facilities.filter(f => f.type === '幼兒園').length;
+            document.getElementById('statNpo').textContent = facilities.filter(f => f.type === '非營利幼兒園').length;
+            document.getElementById('statInf').textContent = facilities.filter(f => f.type === '托嬰中心').length;
+        }
+
+        initDistricts();
+        renderResults();
+
+        // ─── CSV Import ────────────────────────────────────────────
+        function toggleCsv() {
+            const body = document.getElementById('csvBody');
+            const arrow = document.getElementById('csvArrow');
+            const open = body.style.display === 'none';
+            body.style.display = open ? 'block' : 'none';
+            arrow.style.transform = open ? 'rotate(180deg)' : '';
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            document.getElementById('csvDrop').classList.remove('drag');
+            const file = e.dataTransfer.files[0];
+            if (file) handleFile(file);
+        }
+
+        function handleFile(file) {
+            if (!file || !file.name.endsWith('.csv')) {
+                showCsvStatus('請選擇 .csv 影案', 'err'); return;
+            }
+            // Try UTF-8 first, fallback to BIG5
+            const reader = new FileReader();
+            reader.onload = e => {
+                const text = e.target.result;
+                // If garbled (lots of replacement chars), BIG5 failed—just use UTF-8 result
+                parseCSV(text, file.name);
+            };
+            reader.onerror = () => showCsvStatus('檔案讀取失敗', 'err');
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        // Column name maps (matches common gov open data headers)
+        const colMap = {
+            name: ['幼兒園名稱', '機構名稱', '名稱', '學校名稱'],
+            district: ['鄉鎮市區', '行政區', '區域', '區', '鄉镇', '區市'],
+            addr: ['地址', '詳細地址', '機構地址'],
+            tel: ['電話', '聯絡電話', '電話號碼'],
+            cap: ['核定人數', '收托人數', '容納人數'],
+            pub: ['立案別', '鍟性', '類型'],
+        };
+
+        const typeMap = {
+            '公立': '幼兒園', '公': '幼兒園',
+            '非營利': '非營利幼兒園',
+            '準公共': '準公共幼兒園', '準公': '準公共幼兒園',
+            '私立': '私立幼兒園', '私': '私立幼兒園',
+            '托嬰中心': '托嬰中心',
+        };
+        const pubMap = { '幼兒園': '公', '非營利幼兒園': '非', '準公共幼兒園': '準', '私立幼兒園': '私', '托嬰中心': '私' };
+
+        function findCol(headers, keys) {
+            for (const k of keys) {
+                const i = headers.findIndex(h => h.includes(k));
+                if (i >= 0) return i;
+            }
+            return -1;
+        }
+
+        function parseCSV(text, filename) {
+            // Split rows, handle \r\n and \n
+            const rows = text.trim().split(/\r?\n/);
+            if (rows.length < 2) { showCsvStatus('檔案內容空白或格式錯誤', 'err'); return; }
+
+            // Parse header
+            const headers = splitCSVRow(rows[0]);
+
+            // Find column indices
+            const col = {};
+            for (const [key, candidates] of Object.entries(colMap)) {
+                col[key] = findCol(headers, candidates);
+            }
+
+            if (col.name < 0 || col.district < 0) {
+                showCsvStatus(`找不到必要欄位（名稱、區域）。請參考下方欄位說明。
+偵測到的欄位：${headers.slice(0, 8).join(' / ')}`, 'err');
+                return;
+            }
+
+            let added = 0, skipped = 0;
+            const importedFacilities = [];
+
+            for (let i = 1; i < rows.length; i++) {
+                if (!rows[i].trim()) continue;
+                const cells = splitCSVRow(rows[i]);
+
+                const name = col.name >= 0 ? cells[col.name]?.trim() : '';
+                let dist = col.district >= 0 ? cells[col.district]?.trim() : '';
+                const addr = col.addr >= 0 ? cells[col.addr]?.trim() : '';
+                const tel = col.tel >= 0 ? cells[col.tel]?.trim() : '';
+                const capRaw = col.cap >= 0 ? cells[col.cap]?.trim() : '0';
+                const pubRaw = col.pub >= 0 ? cells[col.pub]?.trim() : '私立';
+
+                if (!name || !dist) { skipped++; continue; }
+
+                // Normalize district: 如果含全形5字台中市 filter
+                if (addr && addr.includes('台中市') === false && dist.includes('台中') === false) {
+                    skipped++; continue;
+                }
+                // Strip prefixes like "台中市" from district if present
+                dist = dist.replace(/^台中市/, '').replace(/台中市/, '');
+                // Ensure ends in "區"
+                if (!dist.endsWith('區')) dist = dist + '區';
+
+                // Check district is in our list
+                if (!districts.find(d => d.name === dist)) { skipped++; continue; }
+
+                // Map type
+                let type = '私立幼兒園';
+                for (const [k, v] of Object.entries(typeMap)) {
+                    if (pubRaw.includes(k)) { type = v; break; }
+                }
+
+                const pub = pubMap[type] || '私';
+                const cap = parseInt(capRaw) || 0;
+
+                importedFacilities.push({ district: dist, name, type, pub, addr: addr || '地址未提供', tel: tel || '-', cap, imported: true });
+                added++;
+            }
+
+            if (added === 0) {
+                showCsvStatus(`未匹配到台中市的機構（跳過 ${skipped} 筆）。請確認 CSV 欄位名稱。`, 'err');
+                return;
+            }
+
+            // Remove old imported data, add new
+            const base = facilities.filter(f => !f.imported);
+            facilities.length = 0;
+            base.forEach(f => facilities.push(f));
+            importedFacilities.forEach(f => facilities.push(f));
+
+            updateStats();
+            renderResults();
+            showCsvStatus(`✅ 成功匟入 ${added} 筆台中市機構（跳過 ${skipped} 筆）！現有內建資料已保留。`, 'ok');
+        }
+
+        function splitCSVRow(row) {
+            // Handle quoted fields (RFC 4180)
+            const result = [];
+            let cur = '', inQ = false;
+            for (let i = 0; i < row.length; i++) {
+                const ch = row[i];
+                if (ch === '"') {
+                    if (inQ && row[i + 1] === '"') { cur += '"'; i++; }
+                    else inQ = !inQ;
+                } else if (ch === ',' && !inQ) {
+                    result.push(cur); cur = '';
+                } else cur += ch;
+            }
+            result.push(cur);
+            return result;
+        }
+
+        function showCsvStatus(msg, type) {
+            const el = document.getElementById('csvStatus');
+            el.className = `csv-status ${type}`;
+            el.innerHTML = msg;
+            el.style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>

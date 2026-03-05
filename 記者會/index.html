@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>記者發布會專案管理(2026 0307正式版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f172a',
+                        secondary: '#334155',
+                        accent: '#3b82f6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-primary text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 md:py-4 flex justify-between items-center">
+            <h1 class="text-lg md:text-2xl font-bold tracking-wide">📅 記者發布會專案管理<span
+                    class="text-sm font-normal opacity-70 ml-2">(2026 0307正式版)</span></h1>
+            <div class="text-xs md:text-sm opacity-80">2026 年度</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+
+        <!-- 組別篩選器：讓工作人員選擇自己的組別 -->
+        <div
+            class="bg-white rounded-xl shadow-sm p-3 md:p-4 mb-4 md:mb-6 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 md:gap-4 border border-gray-100">
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+                <span class="text-gray-700 font-medium text-sm md:text-base whitespace-nowrap">👤 我是哪一組：</span>
+                <select id="group-filter" onchange="filterByGroup(this.value)"
+                    class="flex-1 sm:flex-none px-3 md:px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent cursor-pointer min-w-0 sm:min-w-[180px] text-sm md:text-base">
+                    <option value="">全部顯示</option>
+                    <!-- 選項會由 JavaScript 動態生成 -->
+                </select>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="clearFilter()"
+                    class="px-3 md:px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors flex items-center gap-1 text-sm md:text-base">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                    清除
+                </button>
+                <!-- 顯示目前篩選狀態 -->
+                <div id="filter-status"
+                    class="hidden text-xs md:text-sm text-accent font-medium bg-blue-50 px-2 md:px-3 py-1 rounded-full">
+                    <!-- 動態顯示篩選中的組別 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-200 mb-4 md:mb-8 overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+            <button onclick="switchTab('groups')" id="tab-groups"
+                class="px-4 md:px-6 py-2 md:py-3 text-base md:text-lg font-medium text-accent border-b-2 border-accent hover:bg-gray-50 transition-colors focus:outline-none whitespace-nowrap">
+                👥 各組分配
+            </button>
+            <button onclick="switchTab('rundown')" id="tab-rundown"
+                class="px-4 md:px-6 py-2 md:py-3 text-base md:text-lg font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300 transition-colors focus:outline-none whitespace-nowrap">
+                ⏱️ 流程表
+            </button>
+            <button onclick="switchTab('agenda')" id="tab-agenda"
+                class="px-4 md:px-6 py-2 md:py-3 text-base md:text-lg font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300 transition-colors focus:outline-none whitespace-nowrap">
+                🎙️ 記者會時程
+            </button>
+            <button onclick="switchTab('radio')" id="tab-radio"
+                class="px-4 md:px-6 py-2 md:py-3 text-base md:text-lg font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300 transition-colors focus:outline-none whitespace-nowrap">
+                📻 對講機頻道
+            </button>
+        </div>
+
+        <!-- Groups Content -->
+        <div id="content-groups" class="tab-content active animate-fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="groups-container">
+                <!-- Groups will be injected here -->
+            </div>
+        </div>
+
+        <!-- Rundown Content -->
+        <div id="content-rundown" class="tab-content animate-fade-in">
+            <div class="overflow-x-auto bg-white rounded-lg shadow">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th
+                                class="px-2 md:px-6 py-2 md:py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                時間</th>
+                            <th
+                                class="px-2 md:px-6 py-2 md:py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                項目</th>
+                            <th
+                                class="px-2 md:px-6 py-2 md:py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider hidden md:table-cell">
+                                執行重點</th>
+                            <th
+                                class="px-2 md:px-6 py-2 md:py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                負責</th>
+                            <th
+                                class="px-2 md:px-6 py-2 md:py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider hidden lg:table-cell">
+                                備註</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="rundown-container">
+                        <!-- Rundown rows will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Agenda Content -->
+        <div id="content-agenda" class="tab-content animate-fade-in">
+            <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 mb-6 border border-gray-100">
+                <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-1">🎙️ 記者會進行時程</h2>
+                <p class="text-sm text-gray-500">15:15 開始，共 60 分鐘</p>
+            </div>
+            <div class="overflow-x-auto bg-white rounded-lg shadow">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th
+                                class="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                時間(分)</th>
+                            <th
+                                class="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                項目</th>
+                            <th
+                                class="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider hidden md:table-cell">
+                                詳細說明</th>
+                            <th
+                                class="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                長度</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="agenda-container">
+                        <!-- Agenda rows will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Radio Channel Tab Content -->
+        <div id="content-radio" class="tab-content animate-fade-in">
+            <!-- 標題 -->
+            <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 mb-6 border border-gray-100">
+                <h2 class="text-lg md:text-2xl font-bold text-gray-800 mb-1">📻 對講機頻道分配表</h2>
+                <p class="text-sm text-gray-500">有問題組長要支援切 CH1｜前台與後勤共使用 16 台，總部備用 4 台（充飽電放置於 1F 簽到處或 B1 控台）</p>
+            </div>
+
+            <!-- 頻道卡片 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6" id="radio-cards">
+                <!-- injected by JS -->
+            </div>
+
+            <!-- 備用說明 -->
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+                <span class="text-2xl">📦</span>
+                <div>
+                    <div class="font-bold text-amber-800 text-sm mb-1">備用機說明</div>
+                    <div class="text-sm text-amber-700">總部備用機 <strong>4 台</strong>，充滿電後放置於 <strong>1F 簽到處</strong> 或
+                        <strong>B1 控台</strong>，供緊急替換使用。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-400 py-6 mt-12">
+        <div class="container mx-auto px-4 text-center text-sm space-y-1">
+            <div>&copy; 2026 版權所有 機動組－Kevin</div>
+            <div class="text-gray-500">版本資訊數據以總召彙整後的最終版為主</div>
+        </div>
+    </footer>
+
+    <!-- Modal for Detailed Group View -->
+    <div id="group-modal"
+        class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-0 md:p-4 backdrop-blur-sm transition-opacity duration-300 opacity-0"
+        onclick="if(event.target === this) closeGroupModal()">
+        <div class="bg-white md:rounded-2xl shadow-2xl w-full h-full md:h-auto md:max-w-4xl md:max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0"
+            id="modal-content">
+            <!-- Content injected by JS -->
+        </div>
+    </div>
+
+    <!-- Script Modal -->
+    <div id="script-modal"
+        class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300 opacity-0"
+        onclick="if(event.target === this) closeScriptModal()">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0"
+            id="script-modal-content">
+            <div
+                class="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+                <div>
+                    <p class="text-xs text-amber-600 font-semibold uppercase tracking-wider mb-0.5">📄 講稿</p>
+                    <h2 class="text-xl font-bold text-gray-900" id="script-modal-title"></h2>
+                </div>
+                <button onclick="closeScriptModal()"
+                    class="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <div class="px-6 py-6 text-gray-700 leading-relaxed text-sm md:text-base" id="script-modal-body"></div>
+        </div>
+    </div>
+
+    <!-- JavaScript Data & Logic -->
+    <script>
+        // Data
+        const groupsData = [
+            {
+                id: 0,
+                name: "總召",
+                leader: "品嘉, Zoe",
+                count: "2",
+                desc: "全局指揮與通訊",
+                mission: "負責 1F 與 B1 通訊調度，總召。",
+                color: "bg-red-100 text-red-800",
+                notes: {
+                    before: ["確認各組無線電、Rundown。", "確認地下室通訊死角與中繼人員配置。"],
+                    during: ["1F 與 B1 通訊調度。", "全場進度監控與突發狀況指揮。"],
+                    after: ["確認場地復原情形。", "宣布全體解散。"]
+                }
+            },
+            {
+                id: 1,
+                name: "餐飲組",
+                leader: "品嘉（組長）、多多（副組長）",
+                count: "6",
+                desc: "補水、擦乾、保持桌面整潔。⚠️ 本組不發放餐盒。",
+                mission: "補水、擦乾、保持桌面整潔。本組不發放餐盒。",
+                color: "bg-orange-100 text-orange-800",
+                timeline: [
+                    { time: "14:30 - 16:00", action: "待命巡撿", details: "1. 每 20 分鐘檢查茶桶水量、擦乾量。<br>2. 眼觀四處：看到空杯主動走去，維持桌面空間。" },
+                    { time: "16:00 - 18:00", action: "交流期", details: "1. 眼觀四處：看到空杯主動收走，維持桌面空間。<br>2. 手拿抹布：發現水滴需在 30 秒內擦乾，保護資料與衣物。<br>3. 動態補給：觀察茶點量，剩餘過少則進行供盤或補貼，維持豐盛感。" },
+                ],
+                notes: {
+                    before: ["分工：茶水巡視（2人）、環境巡視（4人）。", "準備備品：抹布、托盤等（不含VIP餐盒）。", "需與 3、4 組搭配，確認場地。"],
+                    during: ["14:30–16:00 待命巡撿：每 20 分鐘補充、維持桌面整潔。", "16:00–18:00 交流期：主動補水、擦乾、動態補給茶點。"],
+                    after: ["茶水設備收拾歸位。"]
+                }
+            },
+            {
+
+                id: 2,
+                name: "動線引導",
+                leader: "彩虹（組長）、仁佐（副）",
+                count: "4人（佑騰、仁佐、士欣、上佐）",
+                desc: "門神、守住 1F 門戶，確保所有下樓者皆已完成身分核對。",
+                mission: "門神、磁道、守住 1F 門戶，確保所有下樓者皆已完成身分核對。",
+                color: "bg-yellow-100 text-yellow-800",
+                timeline: [ 
+                    { time: "前一天", action: "B1 場地空間佈置", details: "1. 確認入場名牌與顏色系列。<br>2. 積極領路協調。<br>3. 確認進場機制：核心、入場接待、接受步驟。" },
+                    { time: "11:00", action: "入場籌備", details: "1. 名牌拿場地。<br>2. 確認 VIP 入場流程：VIP 入場者告知應知事項。<br>3. 確認進場機制 / 進場人員 / 進場接待 / 接受步驟。" },
+                    { time: "12:00", action: "彩排開始", details: "1. 家組引導台功課：熟悉動線、分流 SOP。<br>2. 任課追蹤，確認彩排 OK。" },
+                    { time: "13:00", action: "場佈收場、工作人員散場", details: "場地確認後工作人員短暫休息。" },
+                    { time: "14:00 - 14:30", action: "全域佈防<br>帶 VIP 入場", details: "<strong>配置：</strong><br>・1F 門神組：Sean、舜傑（各 1 台）<br>・1F 入口門側：機動 2 台→Sean（仁佐/mk）<br>・B1 引導：使橋、（庭橋/仁佐/mk）、士欣<br><br><strong>重點：</strong><br><span class=\"text-red-600 font-bold\">「守住 1F！！！不得擅離職守」</span><br>・有時貴賓不帶名牌（受邀 VIP），憑名單可免發名牌。<br>・1F 固定 2 名引導；其餘協助 B1 引導協助入場。<br><br><strong>請輪流離場吃飯：</strong>達送人數到位後配合接岸形 B1。" },
+                    { time: "14:30", action: "門號執行", details: "1F 門神：Sean、舜傑；1F 引導；B1 引導：佐橋、士欣<br>送進人數後配合送至 B1。<em>備用：A4 大小名單 2 份</em>" },
+                    { time: "14:45", action: "閉門會議", details: "1F 入口門神引導→告訴來賓：<strong>「15:15 貴賓購票入場，入場保持安靜」</strong><br>名單核對；媒體步驟同前。" },
+                    { time: "14:45 - 15:00", action: "貴賓、付費會員進場", details: "場地：1F 門神 Sean、舜傑；引導：仁佐、士欣<br>1. 1F 外側換取粉紅 / 藍名牌，引導至座位區。<br>2. 付費會員：「TBD 名牌＋餐盒」，引導到座位區。<br>媒體：步驟同前。<br><em>⚠️ 14:45 進場人員最多，需同時安排好分流。</em>" },
+                    { time: "15:15", action: "記者會正式開始", details: "B1 門神維護秩序，按座位讓購票者依序入座。" },
+                    { time: "15:45", action: "QA 與合照<br>VIP・媒體場域", details: "確認 B1 引導是否有接洽媒體攝影機調整。<br>1F 引導確認媒體採訪需求。<br>確認 B1 是否有免責引導人員。" },
+                    { time: "16:00 -", action: "OA 會合開始", details: "1F 門神至少 2 台；B1 門神至少 2 台。<br>不得讓非身分人員下 B1 交流。" },
+                    { time: "16:15", action: "交流會正式開始", details: "全場開放自由交流，引導維持秩序。<br>伴手禮換發：確認 1F 交換伴手禮點位。" },
+                    { time: "18:00", action: "場地撤收", details: "廠代名牌收回。引導組協助收拾哨位。" },
+                ],
+                notes: {
+                    before: [
+                        "迎賓問候語（對所有下樓者說）：「您好，請問今天有受邀嗎？」",
+                        "請固定位置，勿任意離開。",
+                        "跟親友帶名單名牌，若有就找對組員，再由組長交接。",
+                        "身上帶對名牌。"
+                    ],
+                    during: [
+                        "15:15 後有人欲離開現場，主動詢問原因並告知可於交流時段（16:15後）再入場。",
+                        "門神須全程在 1F 守位，任何人下 B1 皆需核對名牌。",
+                        "媒體、VIP、付費貴賓分流至不同通道。",
+                        "有不明人士進場立即通報組長或總召。"
+                    ],
+                    after: ["歸還名牌、清點人數。", "協助場地復原。"]
+                }
+            },
+            {
+                id: 3,
+                name: "入口簽到",
+                leader: "阿寬（組長）、舜傑（副）",
+                count: "8",
+                desc: "核對身分、發放物資、快速分流。<br><span class='text-xs font-normal'>機制協調：阿寬、舜傑｜狀況協調A：小箱（易達）｜狀況協調B：依靈（茵文）｜引導組：仁佐、士欣、佑騰｜機動組：千葉、彥香</span>",
+                mission: "核對身分、發放物資、快速分流。",
+                color: "bg-yellow-100 text-yellow-800",
+                timeline: [
+                    { time: "全程執行", action: "核對與發放<br>（目標 &lt;30s）", details: "1. 詢問大名或單位。<br>2. 核對名單並打勾。<br>3. 依身份給予名牌與餐盒（媒體綠色、VIP 金黃色）。<br>4. 指引：告知對應休息區 / 座位區方向。" },
+                    { time: "異常處理", action: "排除卡關", details: "1. 若名單找不到名字，請人員移至旁邊稍候，立刻呼叫總召或第 8 組。<br>2. 不在此處與熟人長時間寒暄，避免後方人流堵塞。" },
+                    { time: "13:00", action: "場地佈置", details: "1F 報到桌整理：「簽名表格」、「簽名單」、「名單」。<br>A組：確認好簽名單，帶備筆。<br>B組：協助餐盒和伴手禮放好桌子。<br>引導組：貼好示牌。<br>機動組：千葉、彥香各自站定位。" },
+                    { time: "14:00", action: "全員備戰集合", details: "完成媒體淺綠名牌與餐盒 / 伴手禮配對。" },
+                    { time: "14:30", action: "報到進場與領餐", details: "媒體出示記者證或工作證（名單確認 2/25 前組長彙整）。<br>1F: 確認身分→依靈、瀚文；簽名發名牌→小箱、易達。<br>B1: 機動組發放餐盒，發放完需記錄已領取。<br>入場和簽到告訴所有來賓：【15:15 開幕儀式，入場請保持安靜】" },
+                    { time: "14:30", action: "引導至媒體沙發區", details: "媒體出示記者證後，由兩位引導帶至媒體沙發區。<br>名單要 2 份（簽名 / 身份跟簽名各 1）。<br>貴賓是否需要改簽進場編，維護進場順序。<br>餐盒是否改用名牌換餐盒，和伴手禮一起。" },
+                    { time: "14:45", action: "閉門會議", details: "簽到組持續在崗，閉門會議期間仍繼續核對晚到者。" },
+                    { time: "15:55", action: "（全程）", details: "1F 入口門神→（換引導組）<br>確認身分→依靈 / 瀚文；簽名發名牌→小箱、易達。<br>協助排隊和狀況處理→銀箱、路程。<br>請排隊進場來賓先出分流別物品→彥香、千葉。<br>（貴賓 / 逾請 報名的帶 MAIL / 手機 YT 會員）" },
+                    { time: "16:00", action: "交流會開始<br>伴手禮換發", details: "媒體離場以名牌換伴手禮。<br>沒有身份（沒邀請函 / 沒名牌）者，請帶到旁邊處理。<br>VIP 離場由 VIP 接待組負責換發伴手禮。" },
+                    { time: "18:00", action: "場地撤收復原", details: "確保物品集中管理，上樓前負責回收簽名表、名牌等物資。" },
+                ],
+                notes: {
+                    before: ["名單要 2 份（簽名和身份跟簽名各1）。", "確認媒體記者證、工作證，2/25 前組長彙整。", "準備備品：簽名台、名牌盒、餐盒備份。"],
+                    during: ["核對速度目標 &lt;30 秒 / 人。", "異常人員立刻移至側邊，通報組長或第 8 組。", "不得與熟人長時間寒暄，避免後方人流堵塞。"],
+                    after: ["名牌回收彙整。", "協助場地復原。"]
+                }
+            },
+            {
+                id: 4,
+                name: "VIP接待",
+                leader: "小V、阿寶",
+                count: "2",
+                desc: "尊榮、守門、確保 VIP 隱私與流程暢順。",
+                mission: "尊榮、守門、確保 VIP 隱私與流程暢順。",
+                color: "bg-teal-100 text-teal-800",
+                timeline: [
+                    { time: "14:30 - 15:15", action: "接待與安置", details: "1. 對接：看到第 3 組發放金黃名牌，立刻上前接應導引。<br>2. 服務：帶入休息室，確認飲水需求，告知廁所位置。<br>3. 守門：維持休息室關閉，攔截試圖闖入的媒體。" },
+                    { time: "15:15 後", action: "入座引導", details: "1. 引導 VIP 至主會場第一排預留座位入座。" },
+                ],
+                notes: {
+                    before: ["確認 VIP 名單與金黃名牌對應。", "瞭解 VIP 休息室位置與動線。"],
+                    during: ["14:45 確認 VIP 已在休息室，閉門會議開始。", "15:15 引導 VIP 移至主會場就座。", "全程守門，非金黃名牌一律不得進入VIP休息室。"],
+                    after: ["陪送 VIP 離場至樓上。", "清點伴手禮發放情況。"]
+                }
+            },
+            {
+                id: 5,
+                name: "場控",
+                leader: "Even（組長）",
+                count: "8",
+                desc: "節奏大師：你是現場的紅綠燈，確保人流與流程不打結。",
+                mission: "節奏大師：確保流程順暢、人員就位、QA 與合照精準執行。",
+                color: "bg-blue-100 text-blue-800",
+                timeline: [
+                    { time: "13:00", action: "麥克風準備<br>承租、漢文・學鏢", details: "承租準備：<br>1. 跟設備組確認當天麥克風數量（4支＋kayne 準備兩隻有限麥克風）。<br>2. 前一天跟設備組長確認，請其協助測試所有麥克風狀況與電量。<br>3. 在群組回報麥克風數量及設備測試狀況。<br><br>漢文準備：<br>1. 單獨測試確認主持是否可以清楚收聲，以及如何配合。" },
+                    { time: "14:45", action: "RADY 彥博", details: "1. 注意入場人員狀況，處理突發事件（有問題聯絡 Even）。<br>a. 關注名牌顏色：金黃（VIP）→ 第一排；淺綠（媒體）→ 第二排 / 沙發區。<br>b. 接後是進淺空，不讓人進去不屬入場區。<br>2. 特殊狀況：若遇到 VIP 人員，請原地喊停，聯絡寶宙前來接待。<br><br>分工：有狀況，彥博待在原地，RADY 去尋求機動人員支援後返回崗位。<br>注意：RADY 有不清楚的，先詢問彥博。" },
+                    { time: "15:15", action: "漢文・學鏢<br>Vincent・引導<br>威森・指引<br>承租・拿麥", details: "前置作業：製作 3 張 A3 提示牌（3min、1min、時間到！），數字需佔滿版面，3/3 前完成。<br><br>QA時：自負過麥克風及示意大家保持安靜。承租記名；彥博、RADY 掌控秩序。<br><br>⏱ 時間段：<br>15:15-15:20 鬼鬼開場 5m<br>15:20-15:25 沐陽協會 5m（Vincent 引導上台，報告完威森請留步合照，漢文學牌 1min 提醒）<br>15:25-15:30 宜捷幹細胞 5m（同上）<br>15:30-15:35 磐毅建設 5m（同上）<br>15:35-15:40 協奕法律 5m（同上）<br>15:40-15:45 滋和堂生醫 5m（同上）<br>15:45-15:50 衍舍室內裝修 5m（同上）<br>15:50-16:00 EVOL 享樂卡 5m（威森請最後留步，告知可欣站位，由可欣引導主持人拍合照）<br>15:55-16:00 大合照（Vincent 引導 VIP 上台，Lin 引導報告人上舞台，威森告知可欣站位）" },
+                    { time: "15:55", action: "承租、Lin、威森", details: "任務 1：引導媒體騰收設備後，帶媒體至休息室。<br>注意是否有人接近或干擾媒體設備。" },
+                    { time: "15:55", action: "彥博、RADY", details: "任務 2：引導記者與媒體朋友們至休息室入座。" },
+                    { time: "15:55", action: "Vincent、漢文", details: "聯係後勤幫椅子挪位，清出空間給大家做交流。" },
+                    { time: "16:00", action: "全場監控", details: "1. 宣布交流會開始，引導媒體與貴賓移至各交流區。<br>2. 協助第 11 組（護衛）排除 JK 周邊過度接觸的人群。" },
+                ],
+                notes: {
+                    before: ["提前製作 3 張 A3 計時提示牌（3min、1min、時間到！），3/3 前完成。", "確認 Rundown，熟讀 SOP。", "確認麥克風數量與設備狀況（4支＋備份）。"],
+                    during: ["Vincent 負責前排引導、接送演講者上下台。", "威森 負責演講後留步合照指引。", "漢文＋學鏢 負責計時牌提醒。", "RADY＋彥博 負責場館秩序掌控。"],
+                    after: ["確認所有演講者合照完成。", "協助交流會動線整理。"]
+                }
+            },
+            {
+                id: 6,
+                name: "設備組",
+                leader: "Kayne",
+                count: "4",
+                desc: "「不斷電、不斷網」。監控電力負載與地下室訊號。",
+                mission: "監控電力負載與地下室通訊訊號，確保硬體穩定運作。",
+                color: "bg-indigo-100 text-indigo-800",
+                timeline: [
+                    { time: "13:00 - 14:00", action: "硬體測試", details: "1. 進行麥克風音量、音響建線最終測試。<br>2. 檢查後方媒體延長線是否已通電。" },
+                    { time: "15:00 - 16:00", action: "現場監控", details: "1. 定點待命：守在音控桌或媒體區。<br>2. 緊急救援：若媒體反應電力或訊號異常，立刻提供備用延長線或分享器支援。" },
+                ],
+                notes: {
+                    before: ["重點監控後方媒體區電力與地下室通訊訊號。", "架設音響、投影、電力、網路。"],
+                    during: ["監控電力與網路訊號穩定性。", "緊急救援：提供備用延長線或分享器。"],
+                    after: ["撤除所有設備。", "線材收納。"]
+                }
+            },
+            {
+                id: 7,
+                name: "場佈組",
+                leader: "四期",
+                count: "3",
+                desc: "「固定、復原」。確保硬體安全，協助活動收尾。",
+                mission: "確保所有設備固定安全，活動結束後完整復原場地。",
+                color: "bg-lime-100 text-lime-800",
+                timeline: [
+                    { time: "前置作業", action: "安全檢核", details: "1. 防絆倒：確保地上所有電線均已用膠帶黏貼牢固。<br>2. 穩固度：檢查背板、立牌是否已重固定。<br>3. 逃生檢查：確保所有逃生出入口暢通無阻。" },
+                    { time: "18:00 - 撤收", action: "空間復原", details: "1. 分類清運：設備歸位、垃圾打包。<br>2. 場地復原：協助第 9 組搬運物品，確保 B1 恢復至初始狀態。" },
+                ],
+                notes: {
+                    before: ["確認所有電線防絆倒措施。", "確認背板、立牌固定。", "確認逃生通道暢通。"],
+                    during: ["全程待命，處理臨時設備問題。"],
+                    after: ["設備歸位、垃圾打包。", "協助第9組搬運物品。"]
+                }
+            },
+            {
+                id: 8,
+                name: "機動組",
+                leader: "Kevin（組長）｜樓上副組長 Sean（3條貼紙）｜樓下副組長 Vincent（2條貼紙）",
+                count: "約15-19人",
+                desc: "「人牆」與「補位」。哪裡有漏洞就補哪裡，重點在維安及撤場。",
+                mission: "人牆與補位，哪裡有漏洞就補哪裡，重點在維安及撤場。",
+                color: "bg-purple-100 text-purple-800",
+                timeline: [
+                    { time: "11:00", action: "初始部署", details: "【樓上組】協助簽到組長安排簽到桌；【樓下組】協助攤放椅子。" },
+                    { time: "14:00 - 14:30", action: "全域佈防", details: "1. 支援 1F 門禁：派人支援第 2 組，若有未報名者強闖，機動組負責攔截。<br>2. 協助第 3 組搬運大量餐盒至定位。" },
+                    { time: "14:30 - 15:15", action: "動線維護", details: "1. 站立於 B1 入口與主會場交界處，防止閒雜人等進入 VIP 休息室。<br>2. 監控非媒體人員，若有異常行為立即回報總召。" },
+                    { time: "14:30", action: "餐盒與伴手禮", details: "【樓下組】協助發放媒體餐盒；【樓上組】協助離場後貴賓領取伴手禮。" },
+                    { time: "15:45 - 16:00", action: "合照人流控管", details: "1. 建立排隊動線：開放與鬼鬼 / 嘉賓合照時，機動組需手牽手或拉紅龍製造排隊動線。<br>2. 控制隊伍長度，適時「截斷」隊伍以確保流程準時。" },
+                    { time: "16:00 - 18:00", action: "外圍警戒", details: "1. 在交流會場外圍站崗，觀察是否有可疑人士接近核心人物。<br>2. 隨時待命支援第 9 組（清潔）處理突發打翻飲料等狀況。" },
+                    { time: "18:00 - 撤收", action: "撤離", details: "1. 主力部隊：負責搬運桌椅、拆除背板、搬運音響設備。<br>2. 協助第 9 組將大型垃圾袋運出 B1。<br>3. 確認場地完全復原後，最後一批撤離。" },
+                ],
+                notes: {
+                    before: ["識別方式：組長貼紙3條，副組長2條，組員1條。", "Kevin 統籌；Sean 負責樓上（1F）；Vincent 負責樓下（B1）。"],
+                    during: ["門神支援：協助第2組攔截未報名者。", "合照秩序：手牽手或拉紅龍維持隊伍。", "外圍警戒：全程關注可疑動態。"],
+                    after: ["全體人員環境打掃（18:00）。", "主力搬運桌椅、拆背板、搬音響。", "最後確認場地復原後撤離。"]
+                }
+            },
+            {
+                id: 9,
+                name: "清潔組",
+                leader: "阿傑",
+                count: "3+1人（女廁部分，借調場控組協助）",
+                desc: "「氣味阻絕」與「垃圾清零」，絕不讓 VIP 或媒體看到垃圾堆積。",
+                mission: "氣味阻絕與垃圾清零，確保場地整潔。",
+                color: "bg-green-100 text-green-800",
+                timeline: [
+                    { time: "14:00 - 14:30", action: "戰場掃描", details: "1. 檢查男女廁所衛生性、洗手乳是否充滿。<br>2. 確認垃圾桶已套好全新垃圾袋。" },
+                    { time: "14:30 - 15:15", action: "熱區巡邏（用餐前）", details: "重點巡邏：媒體沙發區、VIP 休息室。<br>1. 主動回收：看到空餐盒主動詢問並收走，避免氣味擴散。<br>2. 垃圾不落地：垃圾袋裝滿 7 分即打包運出 B1，不可堆積在角落。" },
+                    { time: "15:15 - 16:00", action: "廁所熱點巡檢<br>「1515法則」", details: "1. 每 15 分鐘派員巡檢廁所。<br>2. 消除洗手台水漬、擦拾地面衛生紙、確認無異味。<br>3. 此時活動進行中，外部垃圾量少，主力轉向廁所維護。" },
+                    { time: "16:00 - 18:00", action: "流動清潔", details: "1. 交流會期間，再次加強茶水區與交誼區的空杯 / 餐盤回收。<br>2. 維持廁所 15 分鐘巡視頻率。" },
+                    { time: "18:00 - 撤收", action: "終極清空", details: "1. 將所有垃圾分類打包，清運至指定集散地。<br>2. 確保 B1 恢復原狀，不留任何食物殘渣。" },
+                ],
+                notes: {
+                    before: ["確認垃圾袋、清潔用品備品充足。", "女廁由借調的場控組協助巡邏。"],
+                    during: ["氣味第一優先：餐盒、飲料容器立即收走。", "廁所「1515法則」：每15分鐘一次巡檢。", "垃圾7分滿立即打包運出B1。"],
+                    after: ["全區垃圾分類打包清運。", "確保B1不留任何食物殘渣。"]
+                }
+            },
+            {
+                id: 10,
+                name: "影音記錄",
+                leader: "Kim",
+                count: "4",
+                desc: "完整記錄活動全程：照片（A）、錄影（B）、舞台側錄（C）。",
+                mission: "完整記錄活動全程，包含照片、錄影與舞台側錄。",
+                color: "bg-pink-100 text-pink-800",
+                timeline: [
+                    { time: "13:00 - 14:30", action: "場地空間佈置", details: "<strong>A（圓珍、峻棒）：</strong>茶點區、設備器材、椅子布置前 / 中 / 後 各階段拍攝（搭配餐飲組、設備組、場佈組）<br><strong>B（Ian）：</strong>場地布置全程錄影<br><strong>C（Kim）：</strong>錄影機位確認與架設、持續燈位確認、拍攝器材準備" },
+                    { time: "14:30 - 15:15", action: "報到進場與領餐", details: "<strong>A：</strong>簽到前、簽到中（簽到組）、伴手禮、名牌領取、接待各環節拍攝<br><strong>B：</strong>簽到中、接待、餐點領取全程錄影<br><strong>C：</strong>待命（臨時問題處理）、持續燈與機位注意" },
+                    { time: "15:15 - 15:45", action: "記者會開始", details: "<strong>A：</strong>主持人鬼鬼、協會組、EVOL 組、建設組各環節拍攝<br><strong>B：</strong>活動全程錄影<br><strong>C：</strong>舞台側緣、舞台拍照" },
+                    { time: "15:45 - 16:00", action: "QA 與合照時間", details: "<strong>A：</strong>提問者、大合照（場控組協助）拍攝<br><strong>B：</strong>活動全程錄影<br><strong>C：</strong>舞台側緣、大合照" },
+                    { time: "16:00 - 18:00", action: "交流會", details: "<strong>A：</strong>交流、專訪、換名片畫面拍攝<br><strong>B：</strong>交流錄影<br><strong>C：</strong>交流拍照" },
+                    { time: "18:00 - 撤收", action: "場地撤收復原", details: "<strong>A：</strong>場地撤除紀錄<br><strong>B：</strong>場地撤除錄影<br><strong>C：</strong>持續燈台收" },
+                    { time: "其他時間", action: "隨隊拍攝", details: "1. 背板（布置前、布置中、佈置後）。<br>2. 廁所清潔拍攝（搭配清潔組）。" },
+                ],
+                notes: {
+                    before: ["確認各組拍攝角色分工（A/B/C）。", "機位確認、器材電量確認。"],
+                    during: ["A（圓珍、峻棒）負責手機記錄全程動態。", "B（Ian）負責相機錄影全程。", "C（Kim）負責舞台側錄與關鍵鏡頭。"],
+                    after: ["影片 / 照片備份。", "器材收納回箱。"]
+                }
+            },
+            {
+                id: 11,
+                name: "左右護法",
+                leader: "小黑, 品詰",
+                count: "2",
+                desc: "JK 專屬護衛",
+                mission: "絕對防禦任務。全程貼身保護 JK，不參與任何雜務，不受其他組別指揮。",
+                color: "bg-slate-200 text-slate-800",
+                notes: {
+                    before: ["確認 JK 動線。", "確認安全周界。"],
+                    during: ["絕對防禦任務：全程視線不離 JK，維持安全周界。", "純護衛職能，不參與任何雜務。", "不受其他組別指揮，若有人靠近由 8 組協助引離。"],
+                    after: ["護送 JK 離場。"]
+                }
+            },
+            {
+                id: 12,
+                name: "主持與助手",
+                leader: "可欣 (對接鬼鬼)",
+                count: "2 (含鬼鬼)",
+                desc: "靈魂人物與控場",
+                mission: "鬼鬼負責主持，可欣負責遞物與引導。",
+                color: "bg-rose-100 text-rose-800",
+                notes: {
+                    before: ["準備主持稿。", "確認合照動線。"],
+                    during: ["鬼鬼負責主持，可欣負責遞物與引導。", "明確引導「請媒體回設備區」或「請 VIP 回首排」。"],
+                    after: ["歸還麥克風。", "休息。"]
+                }
+            }
+        ];
+
+        const agendaData = [
+            { timeRange: "00 – 05", item: "開場與特別介紹", detail: "主持人鬼鬼開場，介紹 VIP 與主辦、協辦方", duration: "5分鐘", highlight: true },
+            { timeRange: "05 – 10", item: "1. 沐陽協會", detail: "主持人引言 > 演講者報告 > QA（請 cue 暗樁，舉手時上拿手機）> 下台前需鬼鬼、貴賓、講者合照", duration: "5分鐘", highlight: false, script: `<div style="white-space: pre-wrap; line-height: 2; font-size: 0.95rem;">口說稿 
+allen:
+沐陽這個名字呢 
+就是希望我們可以像太陽一樣
+太陽用溫暖照亮了世界每個陰暗的角落
+而沐陽則是 用善良 用行動
+來照亮每個弱勢族群
+我們希望沐陽可以成為他們心中的那盞燈
+這就是沐陽這名字的由來
+那協會做過哪些事情 幫助過哪些弱勢族群 我們請饅頭教練跟大家做個說明。 
+
+饅頭教練:
+感謝allen介紹，各位貴賓好，我是鰻頭教練，今天代表沐陽協會向各位做簡單介紹。我們是一個正在持續推動［善的循環］的協會。 
+我們目前在進行的活動有［中和動物之家］、［苗栗浪浪之家］、以及逐漸被 遺忘的［花蓮災後重建］ 。
+
+
+       當花蓮發生災變時，有一群傻子，只靠一句『欸！要不要去花蓮』、『喔。 走阿～』就開啟了我們當鏟子超人慢慢變成油漆超人跟夾子超人的過程，其中我們協會的另一位重量級人物[達哥]更是攜家帶眷的帶著小朋友深入重災區去做 服務。用身體力行的方式推動「善的循環」，我們在花蓮看到的除了滿目的瘡痍，我們也看到台灣人的韌性與樂觀，即使我們累得半死，但從阿婆、阿公手上接過那杯熱茶與飲料， 哇～整個身心都舒暢了 起來。每次回來之後，我們會再進行複盤，我們還需要哪些資源，我們該如何 招募更多的人，一起投入這項活動，公益除了可以被執行還要可以被追蹤。 
+
+M (茉莉):
+(接續饅頭教練的話，語氣帶點感慨但堅定)
+很多網紅都呼籲去花蓮救災 但熱度過了就都沒再去了
+例如孫生 傅崐萁 徐榛蔚…..
+花蓮不單需要義工 更需要的是水電做輕鋼架或是做裝潢專業人士
+土是沒了沒錯 連要幫忙刷油漆都沒辦法 因為整間房子連電都沒有因為房子一樣一片狼藉
+
+
+
+
+
+K： 在各地流浪動物之家。我們看到最心酸的現實是「人手永遠不足」每天平均一位志工要照護20隻浪浪。而浪浪實際分配到的照顧時間是很少的，由於人力缺乏,志工時常只能基礎照護，就得趕去下一區。
+所以我們投入人力分擔照顧與陪伴，因為牠們不只需要溫飽，更需要有專業志工協助他們「被接納」、被領養帶回家，去真正改寫牠們的命運。
+
+M:(舉例可愛例子)上次去的時候超多狗狗都超可愛的！他們就像人一樣每隻個性都不同，因為過去的傷痛與人疏遠。
+
+K：沐陽希望照亮社會角落,但在我們眼裡,真正的光源不是別人,正是台下來自各行各業的菁英,
+
+       因此,協會不但會有公益活動 ,還會 不定時舉辦線下活動讓各行各業,能夠有更多機會互動交流  促進商業合作 
+
+
+M:（你可以出資源 、出人力 ， 將您的物資或專業用在第一線對的地方或是帶團隊來當志工，讓這份善意慢慢變成企業的溫度習慣與文化！
+ 讓我們把一次變成每次，讓改變持續發生，形成善的循環讓社會變得更溫暖，不再是短暫的煙火而已）
+
+allen: 剛剛提到善的循環，
+善的循環就是指我們協會，    
+沐陽協會是一顆小齒輪 ，
+我們希望當初被我們幫助過的人，
+有一天有能力了，
+也能成為幫助人的那一個， 
+或是有更多的人因為看見了我們在做的事情 ，加入了我們，
+讓我們從小齒輪帶動到更多更大的齒輪， 由我們轉動大家心中的善 ，我們大家一起成就「善的循環」，這就是我們沐陽最終的理想。
+
+
+
+QA部分
+Q:要如何加入協會呢？
+A:稍後交流時間時候各位可以找協會的夥伴了解詳細加入方式。（請協會的對接夥伴舉手）[可用投影幕展示qr code讓大家加入]
+Q2：協會平時除了公益活動之外還有什麼？
+A：其實我們就像一個大家庭！
+   平常也會常常聚會交流，大家交交朋友、互相分享資源，
+   在做公益的同時，也能在生活和事業上互相幫忙，成為彼此的好夥伴。</div>` },
+            { timeRange: "10 – 15", item: "2. 宜捷幹細胞", detail: "主持人引言 > 演講者報告 > QA（請 cue 暗樁，舉手時上拿手機）> 下台前需鬼鬼、貴賓、講者合照", duration: "5分鐘", highlight: false, script: "【講稿尚未上傳】<br><br>請各協辦隨後將講稿內容更新至此處。" },
+            { timeRange: "15 – 20", item: "3. 磐毅建設", detail: "主持人引言 > 演講者報告 > QA（請 cue 暗樁，舉手時上拿手機）> 下台前需鬼鬼、貴賓、講者合照", duration: "5分鐘", highlight: false, script: `<div style="white-space: pre-wrap; line-height: 2; font-size: 0.95rem;">各位貴賓、各位先進，大家好。
+我是磐毅建設董事長林義棨。
+
+今天我想用最簡單的方式讓大家認識磐毅建設。
+只要跟土地、房子或工程有關，都可以來找我們。
+
+如果您手上有土地，不確定是否能開發；
+有房屋想出租、出售、整合或脫手；
+家中有危險老舊建築，不知道如何重建；
+持有多年持分土地卻卡住，不知道該怎麼處理；
+
+甚至您只是對房地產有興趣，
+或有工程需要發包，我們都能一起評估。
+
+磐毅建設的角色不僅是單一仲介，也不只是開發商，
+我們背後擁有完整的專業團隊，
+提供評估、風險分析與整合方案，
+協助業主在充分了解條件後，在專業支持下做出最適合自己的選擇。
+
+今天我們參與「善的循環」這場活動，
+其實原因很簡單——
+我們每天都在討論重建與整合，
+當社會真正需要重建與陪伴時，
+我們更應該拿出專業與資源共同承擔。
+
+4月11日我們也將舉辦一場分享會，
+誠摯邀請各位前來交流。
+
+謝謝大家。
+
+
+
+問題一（專業定位）
+🎤 台下提問
+
+現在市面上仲介、建商很多，
+請問磐毅建設跟一般開發公司最大的不同是什麼？
+
+🧭 回覆
+
+我們當然會做完整評估，但那只是基本功。
+真正的不同是——我們不是只有蓋房子的選項。
+
+一般建設公司拿到土地，答案通常只有一種：開發出售。
+但我們會思考更多可能性。
+
+這塊地能不能結合商業？
+能不能做資產活化？
+能不能跟其他產業合作，創造不同現金流模式？
+
+我們目前也在整合包租代管、物業管理、資產配置、甚至跨產業合作的機會。
+我們的目標是建立長期價值。
+
+簡單說，
+別人做的是「建案」，
+我們做的是「資源整合」。
+
+
+
+問題二（公益＋格局延伸）
+🎤 台下提問
+
+您剛剛提到「重建與整合」延伸到公益，
+建設公司為什麼會投入這類活動？
+
+🧭 回覆
+
+
+因為建設的本質就是修復。
+
+我們每天處理的，不只是房子，
+還有老屋、危樓、產權糾紛，甚至家族關係。
+
+工程只是表面，修復才是核心。
+
+而社會其實也在等待被整合。
+許多問題不是缺乏資源，而是缺少連結。
+
+既然我們有專業、有團隊、有整合能力，
+當社會需要重建時，我們自然應該參與。
+
+這就是我們投入公益的原因。</div>` },
+            { timeRange: "20 – 25", item: "4. 協奕法律", detail: "主持人引言 > 演講者報告 > QA（請 cue 暗樁，舉手時上拿手機）> 下台前需鬼鬼、貴賓、講者合照", duration: "5分鐘", highlight: false, script: "【講稿尚未上傳】<br><br>請各協辦隨後將講稿內容更新至此處。" },
+            { timeRange: "25 – 30", item: "5. 滋和堂生醫", detail: "主持人引言 > 演講者報告 > QA（請 cue 暗樁，舉手時上拿手機）> 下台前需鬼鬼、貴賓、講者合照", duration: "5分鐘", highlight: false, script: `<div style="white-space: pre-wrap; line-height: 2; font-size: 0.95rem;">時代在變，人的需求也在變。面對台灣逐年老化的人口結構，「健康」不再只是被動的調理，更需要主動的保養。
+滋和堂生醫公司，致力於結合傳統智慧與現代科技，創建一個最具代表性的「藥補及食補品牌」。
+我們的願景很明確：要讓變老不再是負擔，而是一個優雅的過程。我們希望透過高品質的生醫產品，讓長輩們在老化的過程中，依然能保有強健的體魄，享受有尊嚴、有品質的生活。
+
+各位老闆，左手做公益，右手拚健康，這是現在進行式，誠摯地邀請您，加入中華民國沐陽協會，讓我們一起行善天下，讓我們一起為台灣的高齡社會，撐起一把健康的保護傘。
+
+為了展現滋和堂的商業佈局與爆發潛力，4月12日星期六，下午1點到2點半，我們將舉辦「專屬閉門交流會」。屆時，資方代表將親臨現場，進行深度商業對話。
+誠摯邀請各位，把 4 月 12日留給我們。我們，不見不散！謝謝大家！
+
+
+提問：
+「放眼未來的商業佈局，滋和堂最終想透過 4 月 12 日的交流會，啟動一個什麼樣的長期願景？」
+
+回答：
+「我們的終極目標，是建構『生活化保養的商業生態圈』！從老字號出發，全面攻佔現代人的餐桌。4月12日是起點，我們將鏈結資本與跨界資源，強強聯手。滋和堂生醫的目標很明確：成為華人世界『藥補與食補』跨界整合的絕對領導品牌！」</div>` },
+            { timeRange: "30 – 35", item: "6. 衍舍室內裝修", detail: "主持人引言 > 演講者報告 > QA（請 cue 暗樁，舉手時上拿手機）> 下台前需鬼鬼、貴賓、講者合照", duration: "5分鐘", highlight: false, script: "【講稿尚未上傳】<br><br>請各協辦隨後將講稿內容更新至此處。" },
+            { timeRange: "35 – 40", item: "7. EVOL 享樂卡", detail: "主持人引言 > 演講者報告 > QA（請 cue 暗樁，舉手時上拿手機）> 下台前需鬼鬼、貴賓、講者合照", duration: "5分鐘", highlight: false, script: `<div style="white-space: pre-wrap; line-height: 2; font-size: 0.95rem;">各位貴賓好，非常感謝大家今天的蒞臨，我是EVOl享樂卡瘋狂省錢折扣平台的業務總監—品頡
+
+我們公司創立了 EVOL 享樂卡瘋狂省錢折扣平台，主要聚焦在兩個方向
+第一個方向，讓用戶透過平台 每月省下數萬元開銷。我們合作過麗寶樂園、KTV、上市櫃醫美診所、連鎖火鍋店，無論是餐廳招待頂級生蠔、KTV 折扣，甚至是每個月的醫美雷射，我明明跟別人花一樣的錢，但因為我是平台的會員，我就是能比別人得到更多的餐廳招牌菜跟現金折扣
+
+第二個方向，我們致力於讓用戶們能享受特權、享受尊榮！我們去年曾跟特約商家合辦專屬用戶的槍戰活動，而今年我們活動都會辦在招待會所這裡，如果你也跟我一樣討厭在電影院人擠人，成為EVOL的會員你還可以在招待會所這裡邊看電影邊吃buffet，你參加我們的活動絕對可以讓你享受到尊榮感，還可以讓你在朋友圈更有面子
+
+最後，我們會與旗下藝人與網紅為您的品牌拓展新客群。只要你成為我們的特約商家，給出最優的折扣，我們的用戶透過平台能直接跟你預約與下單，我們不只幫品牌拍出千萬流量的影片，更可以幫你的公司實現高效轉換率
+
+最後 4/12下午1：00-2：30 我們有一場閉門交流會
+這場活動的金主會在當天蒞臨現場與各位有深度的商業交流
+
+我們誠摯邀請各位貴賓把4/11號的時間空出來  不見不散
+感謝大家
+
+Q：現在各行各樣業都需要行銷，那找你們幫忙行銷跟找其她行銷公司有什麼差異嗎？
+
+A: 這個問題我從兩個方向來說明第一，我們合作過麗寶樂園、上市櫃醫美、連鎖餐廳，只要跟我們合作，我們會針對你的品牌提供客製化的方案，再幫你落地執行這些方案，執行前後都跟你回報進度並且復盤
+
+第二，我們提供一條龍服務，新媒體的短影音到傳統新聞稿發佈、網紅藝人行銷、平台行銷，這些從前期劇本規劃、後期拍攝剪輯、復盤檢討我們都有專業團隊全部包辦一天24小時我們團隊都帶著全部的熱情在幫客戶解決問題
+
+
+Q:剛剛有聽到平台會有用戶專屬活動，現在的人週末有很多休閒娛樂可以選擇，想問你們未來的活動有什麼獨特的地方嗎？
+
+A：今年舉辦的活動預計在市中心的招待會所舉辦，會所會一站式完成現在年輕人所有週末娛樂的需求，你可以在這裡吃到名店美食、跟朋友一起唱歌、看電影，EVOL把消費、社交、娛樂串聯起來，讓你拍照打卡的時候都能夠跟別人不一樣
+
+Q:市面上很多折扣平台，你們跟其他折扣平台有什麼核心差異？
+
+A:這個問題我覺得很好，因為我們很多合作夥伴在合作前都會問到這個問題
+
+我們的差異在於平台除了食衣住行育樂的優惠折扣外，還結合了藝人網紅資源、媒體資源、律師資源，你可以在平台上用台灣最便宜的價格買新聞為自己品牌宣傳，也有知名的律師團隊能為你服務</div>` },
+            { timeRange: "40 – 41", item: "永豐銀行", detail: "不會上台，但需邀請", duration: "—", highlight: false },
+            { timeRange: "40 – 41", item: "同心動物醫院", detail: "不會上台，但需邀請", duration: "—", highlight: false },
+            { timeRange: "41 – 50", item: "全體 VIP 大合照", detail: "邀請所有報告代表與 VIP 貴賓與主持人合照", duration: "10分鐘", highlight: true },
+            { timeRange: "50 – 55", item: "活動結語", detail: "主持人總結、提醒後續事項", duration: "5分鐘", highlight: true }
+        ];
+
+        function renderAgenda() {
+            const container = document.getElementById('agenda-container');
+            container.innerHTML = agendaData.map((row, index) => {
+                const base = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+                const rowClass = row.highlight ? 'bg-blue-50 border-l-4 border-l-accent' : base;
+                const timeClass = row.highlight ? 'text-accent font-bold' : 'text-gray-500 font-bold';
+                const itemClass = row.highlight ? 'font-bold text-gray-900' : 'font-semibold text-gray-700';
+                const hasScript = !!row.script;
+                const clickAttr = hasScript ? `onclick="openScriptModal(${index})" style="cursor:pointer"` : '';
+                const scriptBadge = hasScript
+                    ? `<span class="ml-2 inline-block bg-amber-100 text-amber-700 border border-amber-300 rounded-full px-2 py-0.5 text-xs font-semibold">📄 講稿</span>`
+                    : '';
+                return `
+                <tr class="${rowClass} ${hasScript ? 'hover:bg-amber-50' : 'hover:bg-blue-50'} transition-colors" ${clickAttr}>
+                    <td class="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap text-xs md:text-sm ${timeClass}">${row.timeRange}</td>
+                    <td class="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm ${itemClass}">${row.item}${scriptBadge}</td>
+                    <td class="px-3 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-600 leading-relaxed hidden md:table-cell">${row.detail}</td>
+                    <td class="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap">
+                        <span class="inline-block ${row.highlight ? 'bg-accent text-white' : 'bg-gray-200 text-gray-700'} rounded-full px-2 md:px-3 py-1 text-xs font-semibold">${row.duration}</span>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function openScriptModal(index) {
+            const row = agendaData[index];
+            if (!row || !row.script) return;
+            const modal = document.getElementById('script-modal');
+            const title = document.getElementById('script-modal-title');
+            const body = document.getElementById('script-modal-body');
+            title.textContent = row.item;
+            body.innerHTML = row.script;
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            document.getElementById('script-modal-content').classList.remove('scale-95', 'opacity-0');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeScriptModal() {
+            const modal = document.getElementById('script-modal');
+            modal.classList.add('opacity-0');
+            document.getElementById('script-modal-content').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); document.body.style.overflow = ''; }, 300);
+        }
+
+        const rundownData = [
+            { time: "前一天", item: "場地空間佈置", execution: "拍照背板、後方設備區架設、音響測試。", groups: "7.場佈、6.設備", note: "音響設備 2/7 希望可以測試<br>如有需前一天進場需提出" },
+            { time: "11:00", item: "入場籌備＋場地布置", execution: "報到桌、VIP 休息室、媒體沙發區、前二排座位 (VIP/媒體)；媒體大砲後60個座位。", groups: "7.場佈、6.設備、8.機動", note: "如有需前一天進場需提出" },
+            { time: "12:00", item: "彩排開始", execution: "各就各位，依時程走一遍。上台報告者：準備報告，樁腳準備QA。主持人：由可欣協助。", groups: "0-12 全體工作人員，報告人(漢堡、饅頭、茉莉、Kevin、一起、易達、品嘉)", note: "" },
+            { time: "13:00", item: "驗收確認", execution: "各組組長確認設備材料到期，與總召報告。", groups: "0-12 全體工作人員＋組員", note: "各小組準備備忘點清單" },
+            { time: "13:30", item: "用餐時間", execution: "30分鐘用餐時間", groups: "0-12 全體工作人員", note: "" },
+            { time: "14:00", item: "全員戰備集合", execution: "1F 哨位啟動。3 組與 4 組完成名牌與餐盒/伴手禮配對、茶水供應，確認休息室物資到位、環境確認。", groups: "0-12 全體工作人員", note: "" },
+            { time: "14:30", item: "報到進場與領餐", execution: "1F 強制攔截：無名牌者禁止下 B1。<br>媒體：簽到並領取「淺綠名牌」，引導至媒體沙發區+遞送餐盒。<br>VIP：簽到並領取「金黃名牌」，引導至VIP 休息室使用點心。", groups: "2.引導、3.簽到、4.VIP 接待、8.機動", note: "各組不得同時離崗<br>副總召不進 B1 深處<br>8、11 組全員在位" },
+            { time: "14:45", item: "閉門會議", execution: "VIP、媒體代表、主協辦移往小會議室。休息室與沙發區停止使用。", groups: "12.主持與助手、4.VIP 接待", note: "" },
+            { time: "14:45", item: "貴賓＋付費會員進場", execution: "1F 強制攔截：無名牌者禁止下 B1。<br>貴賓：簽到並領取「TBD名牌+餐盒」，引導至座位區。<br>付費會員：簽到並領取「TBD名牌+餐盒」，引導至座位區。", groups: "2.引導、3.簽到、4.VIP 接待、8.機動", note: "各組不得同時離崗<br>副總召不進 B1 深處<br>8、11 組全員在位" },
+            { time: "15:15", item: "記者會正式開始", execution: "主持人鬼鬼開場控場。第一排 (VIP/主協辦)、第二排 (媒體) 依名牌顏色對號入座。", groups: "12.主持與助手、5.場控、6.設備、11.左右護法", note: "每組報告完與鬼鬼+賓客合照<br>左右護法", redHighlight: true },
+            { time: "16:00", item: "QA 與合照時間", execution: "媒體於後方設備區或座位區提問。安排嘉賓與主持人鬼鬼合照。Q&A (預計 10 分鐘，最短 5 分鐘，可直接跳過)", groups: "12.主持與助手、10.影音、5.場控", note: "事前需預抓拍攝站位、畫面" },
+            { time: "16:15", item: "交流會正式開始", execution: "引導組＋機動：請黑金牌的會員移進辦公室開會（與這些會員說明流程與細節）。<br>全場開放自由交流。已領餐者可進餐。茶水供應補充。<br>簽到：媒體離開以名牌換伴手禮。VIP 離場請 VIP 接待提供伴手禮。", groups: "1.餐飲、3.簽到、4.VIP接待", note: "需確認報名者、捍衛隊名牌顏色" },
+            { time: "16-18", item: "深度交流會", execution: "護衛組全程貼身保護 JK (不參與雜務)。機動組控管現場動線，母組說明各組狀況及4/11組。", groups: "11.左右護法、8.機動、9.清潔", note: "各組入群QRcode準備" },
+            { time: "18:00", item: "場地撤收復原", execution: "撤除所有設備、看板。垃圾 (尤其是餐盒殘渣) 清運撤離地下室。", groups: "8.機動、9.清潔、7.場佈", note: "" },
+            { time: "18:30", item: "活動圓滿結束", execution: "總召確認場地地復原情形，全體工作人員解散歸賦。", groups: "0.總召", note: "" }
+        ];
+
+        // Functions
+        // 渲染組別卡片（支援篩選功能）
+        function renderGroups() {
+            const container = document.getElementById('groups-container');
+
+            // 根據篩選條件決定要顯示的組別
+            // 如果 currentFilterGroup 為空，顯示全部；否則只顯示選中的組別
+            const groupsToShow = currentFilterGroup === ''
+                ? groupsData
+                : groupsData.filter(g => g.id === parseInt(currentFilterGroup));
+
+            // 如果篩選後沒有結果，顯示提示訊息
+            if (groupsToShow.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center text-gray-500 py-8">找不到符合條件的組別</div>';
+                return;
+            }
+
+            container.innerHTML = groupsToShow.map(group => {
+                // Generate notes HTML based on new structure
+                // 產生「會前/會中/會後」的任務清單 HTML
+                let notesHtml = '';
+                if (group.notes) {
+                    if (group.notes.before && group.notes.before.length > 0) {
+                        notesHtml += `<div class="mb-2"><strong class="text-xs uppercase tracking-wider text-gray-500 block mb-1">會前</strong><ul class="list-disc list-outside ml-4 text-xs md:text-sm text-gray-600 space-y-1">${group.notes.before.map(n => `<li class="break-words">${n}</li>`).join('')}</ul></div>`;
+                    }
+                    if (group.notes.during && group.notes.during.length > 0) {
+                        notesHtml += `<div class="mb-2"><strong class="text-xs uppercase tracking-wider text-gray-500 block mb-1">會中</strong><ul class="list-disc list-outside ml-4 text-xs md:text-sm text-gray-600 space-y-1">${group.notes.during.map(n => `<li class="break-words">${n}</li>`).join('')}</ul></div>`;
+                    }
+                    if (group.notes.after && group.notes.after.length > 0) {
+                        notesHtml += `<div><strong class="text-xs uppercase tracking-wider text-gray-500 block mb-1">會後</strong><ul class="list-disc list-outside ml-4 text-xs md:text-sm text-gray-600 space-y-1">${group.notes.after.map(n => `<li class="break-words">${n}</li>`).join('')}</ul></div>`;
+                    }
+                }
+
+                return `
+                <div onclick="openGroupModal(${group.id})" class="cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-4 md:p-6 border-l-4 border-l-accent relative overflow-hidden flex flex-col h-full group">
+                    <div class="absolute top-0 right-0 p-2 opacity-10 font-bold text-6xl select-none group-hover:opacity-20 transition-opacity">${group.id}</div>
+                    <div class="flex items-center mb-2 relative z-10">
+                        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full ${group.color} font-bold mr-3 text-lg shrink-0">
+                            ${group.id}
+                        </span>
+                        <div>
+                            <h3 class="text-base md:text-xl font-bold text-gray-800">${group.name}</h3>
+                            ${group.leader ? `<div class="text-xs text-gray-500 font-semibold truncate max-w-[180px] md:max-w-none">Leader: ${group.leader} ${group.count ? `<span class="ml-1 px-1.5 py-0.5 bg-gray-100 rounded-full text-gray-600">${group.count}人</span>` : ''}</div>` : ''}
+                        </div>
+                    </div>
+                    <p class="text-gray-600 relative z-10 mb-3 md:mb-4 font-medium text-xs md:text-sm break-words">${group.desc}</p>
+                    
+                    ${notesHtml ? `
+                    <div class="mt-auto pt-4 border-t border-gray-100 relative z-10">
+                        ${notesHtml}
+                    </div>
+                    ` : ''}
+                </div>
+            `}).join('');
+        }
+
+        function openGroupModal(id) {
+            const group = groupsData.find(g => g.id === id);
+            if (!group) return;
+
+            const modal = document.getElementById('group-modal');
+            const content = document.getElementById('modal-content');
+
+            // Helper for formatting content with colors
+            const formatContent = (text) => {
+                if (!text) return '';
+                return text
+                    .replace(/淺綠名牌/g, '<span class="text-green-600 font-bold">淺綠名牌</span>')
+                    .replace(/深綠色名牌/g, '<span class="text-green-800 font-bold">深綠色名牌</span>')
+                    .replace(/金黃名牌/g, '<span class="text-yellow-600 font-bold">金黃名牌</span>')
+                    .replace(/金黃色名牌/g, '<span class="text-yellow-600 font-bold">金黃色名牌</span>')
+                    .replace(/粉紅名牌/g, '<span class="text-pink-600 font-bold">粉紅名牌</span>')
+                    .replace(/(注意|禁止|嚴禁|警告|必看|重點|異常處理)/g, '<span class="text-red-600 font-bold">$1</span>');
+            };
+
+            // Determine table headers
+            const headers = group.tableHeaders || ["時間軸 (Timeline)", "動作", "執行細節 (Execution Details)"];
+
+            // Generate Timeline Rows
+            let timelineHtml = '';
+            if (group.timeline) {
+                timelineHtml = group.timeline.map(item => {
+                    // Check if it's a special 4-column structure (Group 10)
+                    if (item.teamA) {
+                        return `
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-4 font-bold text-gray-700 whitespace-nowrap">${formatContent(item.time)}</td>
+                            <td class="p-4 text-sm text-gray-600">${formatContent(item.teamA)}</td>
+                            <td class="p-4 text-sm text-gray-600">${formatContent(item.teamB)}</td>
+                            <td class="p-4 text-sm text-gray-600">${formatContent(item.teamC)}</td>
+                        </tr>`;
+                    } else {
+                        return `
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-4 font-bold text-gray-700 whitespace-nowrap w-32">${formatContent(item.time)}</td>
+                            <td class="p-4 font-semibold text-gray-800 w-48">${formatContent(item.action)}</td>
+                            <td class="p-4 text-sm text-gray-600 leading-relaxed">${formatContent(item.details)}</td>
+                        </tr>`;
+                    }
+                }).join('');
+            } else {
+                // Fallback: Generate timeline from notes if no specific timeline exists
+                if (group.notes) {
+                    const fallbackTimeline = [];
+                    if (group.notes.before) fallbackTimeline.push({ time: "會前 (Before)", action: "準備與檢查", details: group.notes.before.join('<br>') });
+                    if (group.notes.during) fallbackTimeline.push({ time: "會中 (During)", action: "活動開始", details: group.notes.during.join('<br>') });
+                    if (group.notes.after) fallbackTimeline.push({ time: "會後 (After)", action: "撤收與復原", details: group.notes.after.join('<br>') });
+
+                    timelineHtml = fallbackTimeline.map(item => `
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-4 font-bold text-gray-700 whitespace-nowrap w-32">${formatContent(item.time)}</td>
+                            <td class="p-4 font-semibold text-gray-800 w-48">${formatContent(item.action)}</td>
+                            <td class="p-4 text-sm text-gray-600 leading-relaxed">${formatContent(item.details)}</td>
+                        </tr>`).join('');
+                } else {
+                    timelineHtml = `<tr><td colspan="3" class="p-4 text-center text-gray-500">暫無詳細時間軸資料</td></tr>`;
+                }
+            }
+
+            // Generate Table Header HTML
+            const tableHeaderHtml = headers.map(h => `<th class="p-2 md:p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-50 whitespace-nowrap">${h}</th>`).join('');
+
+            content.innerHTML = `
+                <div class="relative">
+                    <button onclick="closeGroupModal()" class="absolute top-2 right-2 md:top-4 md:right-4 p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors z-20">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                    
+                    <div class="p-4 md:p-8">
+                        <div class="flex flex-col md:flex-row md:items-center mb-4 md:mb-6">
+                            <span class="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full ${group.color} font-bold md:mr-5 text-2xl md:text-3xl shadow-sm shrink-0 mb-3 md:mb-0">
+                                ${group.id}
+                            </span>
+                            <div class="min-w-0">
+                                <h2 class="text-xl md:text-3xl font-bold text-gray-900 mb-1 break-words pr-8 md:pr-0">第 ${group.id} 組：${group.name}</h2>
+                                <p class="text-sm md:text-base text-gray-600 mb-2 break-words">${group.desc}</p>
+                                <div class="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-gray-500">
+                                    <span class="flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>指揮官：${group.leader || '待定'}</span>
+                                    <span class="flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>編制：${group.count || '未定'} 人</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-3 md:p-4 mb-4 md:mb-8 rounded-r-lg">
+                            <p class="font-bold text-blue-900 mb-1 text-sm md:text-base">🎯 核心指令</p>
+                            <p class="text-blue-800 text-sm md:text-base break-words">${formatContent(group.mission || group.desc)}</p>
+                        </div>
+
+                        <div class="overflow-x-auto -mx-4 md:mx-0 rounded-none md:rounded-xl border-y md:border border-gray-200 shadow-sm">
+                            <table class="w-full text-left border-collapse min-w-[500px]">
+                                <thead>
+                                    <tr>
+                                        ${tableHeaderHtml}
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white">
+                                    ${timelineHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            // Trigger reflow
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            content.classList.remove('scale-95', 'opacity-0');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeGroupModal() {
+            const modal = document.getElementById('group-modal');
+            const content = document.getElementById('modal-content');
+
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        // 渲染活動流程表（支援篩選醒目標示）
+        function renderRundown() {
+            const container = document.getElementById('rundown-container');
+
+            // 取得目前選中的組別資訊（用於比對）
+            const selectedGroup = currentFilterGroup !== ''
+                ? groupsData.find(g => g.id === parseInt(currentFilterGroup))
+                : null;
+
+            container.innerHTML = rundownData.map((row, index) => {
+                // 判斷這一列是否與選中的組別相關
+                // 檢查負責組別欄位是否包含選中組別的編號或名稱
+                let isRelevant = false;
+                if (selectedGroup) {
+                    // 1. 處理全體適用的特殊情況
+                    if (row.groups.includes('0-12')) {
+                        isRelevant = true;
+                    } else {
+                        // 2. 根據逗號或頓號分割文字，進行精確匹配
+                        const groupParts = row.groups.split(/[、,，]+/);
+                        isRelevant = groupParts.some(part => {
+                            const trimmed = part.trim();
+                            // 匹配 "ID.組名"（如 1.餐飲）或單純 ID，或組名本身
+                            return trimmed.startsWith(`${selectedGroup.id}.`) ||
+                                trimmed === `${selectedGroup.id}` ||
+                                trimmed.includes(selectedGroup.name);
+                        });
+                    }
+                }
+
+                // 根據是否相關，設定不同的樣式
+                // 相關：黃色背景 + 左側藍色邊框
+                // 不相關但有篩選：淡化顯示
+                // 無篩選：正常顯示
+                let rowClass = '';
+                if (currentFilterGroup === '') {
+                    // 無篩選時，交替顯示白色和灰色背景
+                    rowClass = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+                } else if (isRelevant) {
+                    // 相關的時段：醒目黃色背景 + 左側藍色邊框
+                    rowClass = 'bg-yellow-50 border-l-4 border-l-accent';
+                } else {
+                    // 不相關的時段：淡化顯示
+                    rowClass = 'bg-gray-100 opacity-50';
+                }
+
+                return `
+                <tr class="${row.redHighlight ? 'bg-red-50 border-l-4 border-l-red-500' : rowClass} hover:bg-blue-50 transition-colors">
+                    <td class="px-2 md:px-6 py-2 md:py-4 whitespace-nowrap text-xs md:text-sm font-bold ${row.redHighlight ? 'text-red-600' : isRelevant ? 'text-accent' : 'text-gray-500'}">${row.time}</td>
+                    <td class="px-2 md:px-6 py-2 md:py-4 text-xs md:text-sm ${row.redHighlight ? 'font-bold text-red-700' : isRelevant ? 'font-bold text-gray-900' : 'font-semibold text-gray-700'}">${row.item}${row.redHighlight ? ' <span class="text-red-500">🔴</span>' : ''}</td>
+                    <td class="px-2 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-700 leading-relaxed hidden md:table-cell">${row.execution}</td>
+                    <td class="px-2 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-600">
+                        <span class="inline-block ${isRelevant ? 'bg-accent text-white' : 'bg-gray-200 text-gray-700'} rounded-full px-2 md:px-3 py-1 text-xs font-semibold">
+                            ${row.groups}
+                        </span>
+                    </td>
+                    <td class="px-2 md:px-6 py-2 md:py-4 text-xs md:text-sm text-gray-500 italic hidden lg:table-cell">${row.note}</td>
+                </tr>
+            `}).join('');
+        }
+
+        function switchTab(tabName) {
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Show selected content
+            document.getElementById(`content-${tabName}`).classList.add('active');
+
+            // Update Tab Styles
+            const tabs = ['groups', 'rundown', 'agenda', 'radio'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tabName) {
+                    btn.classList.add('text-accent', 'border-accent');
+                    btn.classList.remove('text-gray-500', 'border-transparent');
+                } else {
+                    btn.classList.remove('text-accent', 'border-accent');
+                    btn.classList.add('text-gray-500', 'border-transparent');
+                }
+            });
+        }
+
+        // ========== 篩選功能相關變數與函式 ==========
+
+        // 目前選擇的組別 ID（空字串表示顯示全部）
+        let currentFilterGroup = '';
+
+        /**
+         * 初始化組別選擇器的選項
+         * 從 groupsData 讀取所有組別，動態產生下拉選單選項
+         */
+        function initGroupFilter() {
+            const select = document.getElementById('group-filter');
+
+            // 為每個組別建立選項
+            groupsData.forEach(group => {
+                const option = document.createElement('option');
+                option.value = group.id;  // 選項的值是組別 ID
+                option.textContent = `${group.id}. ${group.name}`;  // 顯示「編號. 名稱」
+                select.appendChild(option);
+            });
+        }
+
+        /**
+         * 根據選擇的組別篩選內容
+         * @param {string} groupId - 選擇的組別 ID（空字串表示全部顯示）
+         */
+        function filterByGroup(groupId) {
+            currentFilterGroup = groupId;
+
+            // 取得篩選狀態顯示區塊
+            const filterStatus = document.getElementById('filter-status');
+
+            if (groupId === '') {
+                // 如果選擇「全部顯示」，隱藏狀態提示
+                filterStatus.classList.add('hidden');
+            } else {
+                // 顯示目前篩選的組別名稱
+                const group = groupsData.find(g => g.id === parseInt(groupId));
+                if (group) {
+                    filterStatus.textContent = `📍 篩選中：${group.id}. ${group.name}`;
+                    filterStatus.classList.remove('hidden');
+                }
+            }
+
+            // 重新渲染卡片（會套用篩選）
+            renderGroups();
+            // 重新渲染流程表（會醒目標示相關時段）
+            renderRundown();
+        }
+
+        /**
+         * 清除篩選，恢復顯示全部內容
+         */
+        function clearFilter() {
+            // 重設下拉選單為「全部顯示」
+            document.getElementById('group-filter').value = '';
+            // 呼叫篩選函式（傳入空字串）
+            filterByGroup('');
+        }
+
+        // ========== 原有的渲染函式（已修改為支援篩選）==========
+
+        // ===== 對講機頻道資料（正確版）=====
+        const radioChannels = [
+            {
+                ch: 'CH 1',
+                name: '總控',
+                color: 'border-red-400 bg-red-50',
+                badge: 'bg-red-500',
+                members: [
+                    { role: '總召', people: '品嘉（1台）' },
+                    { role: '副總召', people: 'Zoe（貢媽 1台，巡台聽 2、3、4 CH）' },
+                    { role: '機動', people: 'Kevin（1台）、Sean（1台）、Vincent（1台）' },
+                    { role: '餐飲', people: '多多（1台）' },
+                    { role: '清潔', people: '阿傑（1台）' },
+                ]
+            },
+            {
+                ch: 'CH 2',
+                name: '1F 迎賓',
+                color: 'border-yellow-400 bg-yellow-50',
+                badge: 'bg-yellow-500',
+                members: [
+                    { role: '入口簽到', people: '阿寬（1台）、舜傑（1台）' },
+                    { role: '動線引導', people: '佑騰（1台）' },
+                    { role: 'VIP 接待', people: '小V / 賈瑄 / 阿寶（共拿 1台）' },
+                ]
+            },
+            {
+                ch: 'CH 3',
+                name: 'B1 場控',
+                color: 'border-blue-400 bg-blue-50',
+                badge: 'bg-blue-500',
+                members: [
+                    { role: '場控', people: 'Even（1台）' },
+                    { role: '設備', people: 'Kaynez（1台）' },
+                    { role: '主持助手', people: '可欣（1台）' },
+                    { role: '影音紀錄', people: 'Kim（1台）' },
+                ]
+            },
+            {
+                ch: 'CH 4',
+                name: '維安專用',
+                color: 'border-slate-400 bg-slate-50',
+                badge: 'bg-slate-600',
+                note: '⚠️ 頻道獨立，不混用其他組別',
+                members: [
+                    { role: '左右護法', people: '小黑（1台）、品詰（頻道待確認）' },
+                ]
+            },
+        ];
+
+        function renderRadio() {
+            const container = document.getElementById('radio-cards');
+            container.innerHTML = radioChannels.map(ch => {
+                const membersHtml = ch.members.map(m => `
+                    <div class="flex items-start gap-2 py-1.5 border-b border-gray-100 last:border-0">
+                        <span class="text-xs font-semibold text-gray-500 whitespace-nowrap w-20 shrink-0 pt-0.5">${m.role}</span>
+                        <span class="text-xs md:text-sm text-gray-800">${m.people}</span>
+                    </div>`).join('');
+                const noteHtml = ch.note ? `<div class="mt-2 text-xs text-red-600 font-semibold">${ch.note}</div>` : '';
+                return `
+                <div class="bg-white rounded-xl shadow-sm border-l-4 ${ch.color} border border-gray-100 overflow-hidden">
+                    <div class="flex items-center gap-3 px-4 md:px-5 py-3 border-b border-gray-100">
+                        <span class="inline-flex items-center justify-center ${ch.badge} text-white font-black text-sm rounded-full w-14 h-7 shrink-0">${ch.ch}</span>
+                        <span class="font-bold text-gray-800 text-base">${ch.name}</span>
+                    </div>
+                    <div class="px-4 md:px-5 py-3">
+                        ${membersHtml}
+                        ${noteHtml}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // Initialize（初始化）
+        document.addEventListener('DOMContentLoaded', () => {
+            initGroupFilter();  // 初始化組別選擇器
+            renderGroups();     // 渲染組別卡片
+            renderRundown();    // 渲染活動流程表
+            renderAgenda();     // 渲染記者會時程
+            renderRadio();      // 渲染對講機頻道分配表
+        });
+
+    </script>
+</body>
+
+</html>

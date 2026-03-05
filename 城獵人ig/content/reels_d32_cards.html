@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D32 Reels 字卡 - 年夜飯簽約的慘劇</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a2e;
+            font-family: 'Noto Sans TC', sans-serif;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 60px;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .card-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-label {
+            color: #888;
+            font-size: 13px;
+            letter-spacing: 2px;
+        }
+
+        .card {
+            width: 360px;
+            height: 640px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .card .brand {
+            position: absolute;
+            bottom: 24px;
+            font-size: 12px;
+            letter-spacing: 1px;
+            opacity: 0.7;
+        }
+
+        .card .frame-num {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 11px;
+            opacity: 0.5;
+            letter-spacing: 1px;
+        }
+
+        /* ===== Frame 1: Hook ===== */
+        .frame1 {
+            background: linear-gradient(135deg, #8B0000 0%, #4a0000 50%, #1a0000 100%);
+            text-align: center;
+        }
+
+        .frame1::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 215, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+        }
+
+        .frame1 .emoji {
+            font-size: 48px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .frame1 .main-text {
+            font-size: 32px;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.5;
+            position: relative;
+            z-index: 1;
+        }
+
+        .frame1 .highlight {
+            color: #ff4444;
+            font-size: 36px;
+        }
+
+        .frame1 .brand {
+            color: #d4a853;
+        }
+
+        /* ===== Frame 2: Dialogue ===== */
+        .frame2 {
+            background: linear-gradient(180deg, #f5a623 0%, #e88a00 100%);
+            text-align: center;
+        }
+
+        .frame2 .bubble {
+            background: #fff;
+            border-radius: 20px;
+            padding: 28px 32px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            line-height: 1.6;
+            position: relative;
+            margin-bottom: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .frame2 .bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 10px solid transparent;
+            border-top-color: #fff;
+        }
+
+        .frame2 .sub-text {
+            font-size: 20px;
+            color: #5a3000;
+            font-weight: 700;
+            margin-top: 30px;
+            line-height: 1.6;
+        }
+
+        .frame2 .brand {
+            color: #5a3000;
+        }
+
+        /* ===== Frame 3: Warning ===== */
+        .frame3 {
+            background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+            text-align: left;
+            padding-left: 40px;
+        }
+
+        .frame3 .warning-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: #ffd700;
+            margin-bottom: 40px;
+        }
+
+        .frame3 .warning-icon {
+            font-size: 32px;
+            margin-right: 8px;
+        }
+
+        .frame3 .list-item {
+            font-size: 26px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .frame3 .x-mark {
+            color: #ff4444;
+            font-size: 28px;
+            font-weight: 900;
+        }
+
+        .frame3 .bottom-text {
+            font-size: 20px;
+            color: #888;
+            margin-top: 40px;
+        }
+
+        .frame3 .brand {
+            color: #555;
+        }
+
+        /* ===== Frame 4: Question ===== */
+        .frame4 {
+            background: linear-gradient(180deg, #0a1628 0%, #162447 50%, #1f4068 100%);
+            text-align: center;
+        }
+
+        .frame4 .question {
+            font-size: 30px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 50px;
+        }
+
+        .frame4 .answer {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .frame4 .check {
+            font-size: 40px;
+        }
+
+        .frame4 .answer-text {
+            font-size: 48px;
+            font-weight: 900;
+            color: #4ade80;
+        }
+
+        .frame4 .detail {
+            font-size: 18px;
+            color: #94a3b8;
+            line-height: 1.8;
+        }
+
+        .frame4 .brand {
+            color: #475569;
+        }
+
+        /* ===== Frame 5: Dark ===== */
+        .frame5 {
+            background: linear-gradient(180deg, #0f0f0f 0%, #1a1a1a 100%);
+            text-align: center;
+        }
+
+        .frame5 .main-line {
+            font-size: 36px;
+            font-weight: 900;
+            color: #e2e2e2;
+            margin-bottom: 12px;
+        }
+
+        .frame5 .accent {
+            color: #ff6b6b;
+        }
+
+        .frame5 .sub-lines {
+            font-size: 22px;
+            color: #777;
+            line-height: 2;
+            margin-top: 30px;
+        }
+
+        .frame5 .brand {
+            color: #444;
+        }
+
+        /* ===== Frame 6: Solution ===== */
+        .frame6 {
+            background: linear-gradient(135deg, #059669 0%, #047857 50%, #065f46 100%);
+            text-align: center;
+        }
+
+        .frame6 .label {
+            font-size: 22px;
+            color: #a7f3d0;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .frame6 .quote-box {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 30px 28px;
+            margin-bottom: 30px;
+        }
+
+        .frame6 .quote-text {
+            font-size: 28px;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .frame6 .result {
+            font-size: 22px;
+            color: #d1fae5;
+            font-weight: 700;
+        }
+
+        .frame6 .brand {
+            color: #a7f3d0;
+        }
+
+        /* ===== Frame 7: Closing ===== */
+        .frame7 {
+            background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 50%, #450a0a 100%);
+            text-align: center;
+        }
+
+        .frame7::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 30%, rgba(255, 215, 0, 0.12) 0%, transparent 60%);
+        }
+
+        .frame7 .emoji {
+            font-size: 48px;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .frame7 .golden-text {
+            font-size: 34px;
+            font-weight: 900;
+            color: #fbbf24;
+            line-height: 1.5;
+            position: relative;
+            z-index: 1;
+        }
+
+        .frame7 .white-text {
+            font-size: 22px;
+            color: #fca5a5;
+            margin-top: 24px;
+            line-height: 1.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .frame7 .last-line {
+            font-size: 26px;
+            font-weight: 900;
+            color: #fff;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .frame7 .brand {
+            color: #d4a853;
+            z-index: 1;
+        }
+
+        /* ===== Frame 8: CTA ===== */
+        .frame8 {
+            background: linear-gradient(180deg, #111827 0%, #1f2937 100%);
+            text-align: center;
+        }
+
+        .frame8 .brand-name {
+            font-size: 28px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 50px;
+            letter-spacing: 2px;
+        }
+
+        .frame8 .cta-item {
+            font-size: 22px;
+            color: #d1d5db;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .frame8 .cta-icon {
+            font-size: 24px;
+        }
+
+        .frame8 .ny {
+            font-size: 36px;
+            margin-top: 40px;
+            color: #fbbf24;
+            font-weight: 900;
+        }
+
+        .frame8 .brand {
+            color: #4b5563;
+        }
+
+        /* Grid view for quick overview */
+        .grid-view {
+            display: grid;
+            grid-template-columns: repeat(4, 180px);
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .grid-view .card {
+            width: 180px;
+            height: 320px;
+            border-radius: 10px;
+            padding: 20px 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .grid-view .card * {
+            transform: scale(0.5);
+            transform-origin: center center;
+        }
+
+        @media print {
+            body {
+                background: #fff;
+            }
+
+            .card {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🎬 D32 Reels 字卡｜年夜飯簽約的慘劇</h1>
+    <p class="subtitle">每張卡以 9:16 比例呈現，可直接截圖使用 或 對照製作</p>
+
+    <!-- Frame 1 -->
+    <div class="card-wrapper">
+        <div class="card-label">FRAME 1 ／ HOOK（0-3秒）</div>
+        <div class="card frame1">
+            <div class="frame-num">1 / 8</div>
+            <div class="emoji">🧧</div>
+            <div class="main-text">
+                年夜飯吃著吃著<br><br>
+                大伯拿出一張紙<br>
+                要你<span class="highlight">簽名</span>
+            </div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+    <!-- Frame 2 -->
+    <div class="card-wrapper">
+        <div class="card-label">FRAME 2 ／ 情境（3-7秒）</div>
+        <div class="card frame2">
+            <div class="frame-num" style="color:#5a3000;">2 / 8</div>
+            <div class="bubble">
+                💬「都是自己人啦<br>先簽個名就好」
+            </div>
+            <div class="sub-text">
+                ⬇️<br>
+                這句話<br>
+                每年過年都有人中招
+            </div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+    <!-- Frame 3 -->
+    <div class="card-wrapper">
+        <div class="card-label">FRAME 3 ／ 警告清單（7-12秒）</div>
+        <div class="card frame3">
+            <div class="frame-num">3 / 8</div>
+            <div class="warning-title">
+                <span class="warning-icon">⚠️</span>你簽的可能是：
+            </div>
+            <div class="list-item"><span class="x-mark">✕</span> 土地讓渡書</div>
+            <div class="list-item"><span class="x-mark">✕</span> 買賣契約</div>
+            <div class="list-item"><span class="x-mark">✕</span> 委託書</div>
+            <div class="bottom-text">看都沒看就簽？</div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+    <!-- Frame 4 -->
+    <div class="card-wrapper">
+        <div class="card-label">FRAME 4 ／ 問答揭曉（12-18秒）</div>
+        <div class="card frame4">
+            <div class="frame-num">4 / 8</div>
+            <div class="question">❓ 酒後簽名有效嗎？</div>
+            <div class="answer">
+                <span class="check">✅</span>
+                <span class="answer-text">有效</span>
+            </div>
+            <div class="detail">
+                除非你能證明意識不清<br><br>
+                酒精不是藉口<br>
+                簽了就是簽了
+            </div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+    <!-- Frame 5 -->
+    <div class="card-wrapper">
+        <div class="card-label">FRAME 5 ／ 氣氛轉折（18-25秒）</div>
+        <div class="card frame5">
+            <div class="frame-num">5 / 8</div>
+            <div class="main-line">
+                親戚翻臉<br>
+                比外人<span class="accent">狠</span>
+            </div>
+            <div class="sub-lines">
+                告起來六親不認<br>
+                打官司<br>
+                連年夜飯都沒了
+            </div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+    <!-- Frame 6 -->
+    <div class="card-wrapper">
+        <div class="card-label">FRAME 6 ／ 解法（25-33秒）</div>
+        <div class="card frame6">
+            <div class="frame-num">6 / 8</div>
+            <div class="label">💡 記住這句話</div>
+            <div class="quote-box">
+                <div class="quote-text">
+                    「過完年<br>
+                    我找代書看完再簽」
+                </div>
+            </div>
+            <div class="result">擋掉 99% 的坑</div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+    <!-- Frame 7 -->
+    <div class="card-wrapper">
+        <div class="card-label">FRAME 7 ／ 金句收尾（33-38秒）</div>
+        <div class="card frame7">
+            <div class="frame-num">7 / 8</div>
+            <div class="emoji">🧧</div>
+            <div class="golden-text">除夕桌上只擺菜</div>
+            <div class="white-text">
+                不擺合約<br>
+                不擺讓渡書
+            </div>
+            <div class="last-line">吃飯就是吃飯</div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+    <!-- Frame 8 -->
+    <div class="card-wrapper">
+        <div class="card-label">FRAME 8 ／ CTA（38-45秒）</div>
+        <div class="card frame8">
+            <div class="frame-num">8 / 8</div>
+            <div class="brand-name">城獵人｜地產老實說</div>
+            <div class="cta-item"><span class="cta-icon">👉</span> 追蹤不踩坑</div>
+            <div class="cta-item"><span class="cta-icon">💾</span> 收藏備用</div>
+            <div class="cta-item"><span class="cta-icon">💬</span> 你有遇過嗎？留言分享</div>
+            <div class="ny">🧧 新年快樂</div>
+            <div class="brand">城獵人｜地產老實說</div>
+        </div>
+    </div>
+
+</body>
+
+</html>
