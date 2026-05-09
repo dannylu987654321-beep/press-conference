@@ -93,6 +93,29 @@
                 <input type="range" id="compareSlider" min="0" max="100" value="100">
             </div>
 
+            <div class="watermark-controls" style="display: flex; gap: 1rem; align-items: center; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 0.5rem; flex-wrap: wrap;">
+                <label style="font-size: 0.9rem; color: var(--text-muted);">自訂浮水印:</label>
+                <input type="file" id="customWatermarkInput" accept="image/png, image/jpeg, image/webp" style="display: none;">
+                <button class="btn btn-secondary" id="btnCustomWatermark" style="padding: 0.5rem 1rem; font-size: 0.85rem;">📁 選擇圖片</button>
+                <span id="customWatermarkName" style="color: var(--text-main); font-size: 0.85rem; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">(無)</span>
+                <button class="btn btn-secondary" id="btnClearWatermark" style="padding: 0.4rem; display: none; font-size: 0.8rem;">❌</button>
+                
+                <div style="display: flex; gap: 1rem; margin-left: auto; flex-wrap: wrap; align-items: center;">
+                    <label style="font-size: 0.9rem; color: var(--text-muted);">位置:</label>
+                    <select id="customWatermarkPosition" style="padding: 0.3rem;">
+                        <option value="bottom-right">右下</option>
+                        <option value="bottom-left">左下</option>
+                        <option value="top-right">右上</option>
+                        <option value="top-left">左上</option>
+                        <option value="center">置中</option>
+                    </select>
+                    <label style="font-size: 0.9rem; color: var(--text-muted);">大小:</label>
+                    <input type="range" id="customWatermarkSize" min="5" max="100" value="15" style="max-width: 80px;">
+                    <label style="font-size: 0.9rem; color: var(--text-muted);">透明度:</label>
+                    <input type="range" id="customWatermarkOpacity" min="10" max="100" value="100" style="max-width: 80px;">
+                </div>
+            </div>
+
             <div class="controls">
                 <button class="btn btn-secondary" id="btnReset">🔄 重新上傳</button>
                 <div class="options">
@@ -214,18 +237,33 @@
             const btnNext = document.getElementById('btnNext');
             const galleryCounter = document.getElementById('galleryCounter');
 
+            // Custom Watermark Elements
+            const customWatermarkInput = document.getElementById('customWatermarkInput');
+            const btnCustomWatermark = document.getElementById('btnCustomWatermark');
+            const customWatermarkName = document.getElementById('customWatermarkName');
+            const btnClearWatermark = document.getElementById('btnClearWatermark');
+            const customWatermarkPosition = document.getElementById('customWatermarkPosition');
+            const customWatermarkSize = document.getElementById('customWatermarkSize');
+            const customWatermarkOpacity = document.getElementById('customWatermarkOpacity');
+
             let filesQueue = [];
             let currentFileIndex = 0;
             let originalImage = null;
             let processedImageData = null;
             let originalImageData = null;
             let currentFilename = 'image.png';
+            let customWatermarkImg = null;
 
             // Initialize Engine
             await engine.init();
 
+            // Prevent default drag behaviors for the entire window to avoid accidental navigation
+            window.addEventListener('dragover', (e) => e.preventDefault(), false);
+            window.addEventListener('drop', (e) => e.preventDefault(), false);
+
             // Setup Drag & Drop
             uploadArea.addEventListener('click', () => fileInput.click());
+            uploadArea.addEventListener('dragenter', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
             uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
             uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
             uploadArea.addEventListener('drop', (e) => {
@@ -309,7 +347,19 @@
                     requestAnimationFrame(() => {
                         try {
                             const dataToProcess = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                            processedImageData = engine.process(dataToProcess);
+                            let pData = engine.process(dataToProcess);
+                            
+                            if (customWatermarkImg) {
+                                const tempCanvas = document.createElement('canvas');
+                                tempCanvas.width = canvas.width;
+                                tempCanvas.height = canvas.height;
+                                const tempCtx = tempCanvas.getContext('2d');
+                                tempCtx.putImageData(pData, 0, 0);
+                                applyCustomWatermark(tempCtx, canvas.width, canvas.height);
+                                pData = tempCtx.getImageData(0, 0, canvas.width, canvas.height);
+                            }
+                            
+                            processedImageData = pData;
                             ctx.putImageData(processedImageData, 0, 0);
                         } catch (err) {
                             alert('處理圖片時發生錯誤');
@@ -405,6 +455,10 @@
                                 const processedData = engine.process(dataToProcess);
                                 tempCtx.putImageData(processedData, 0, 0);
                                 
+                                if (customWatermarkImg) {
+                                    applyCustomWatermark(tempCtx, img.width, img.height);
+                                }
+                                
                                 const dataUrl = tempCanvas.toDataURL(format, quality);
                                 const link = document.createElement('a');
                                 link.download = `${file.name.replace(/\.[^/.]+$/, "")}_cleaned.${ext}`;
@@ -424,6 +478,72 @@
                 btnDownloadAll.innerHTML = originalText;
                 btnDownloadAll.disabled = false;
             });
+            
+            // --- Custom Watermark Logic ---
+            btnCustomWatermark.addEventListener('click', () => customWatermarkInput.click());
+            
+            customWatermarkInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    customWatermarkName.textContent = file.name;
+                    btnClearWatermark.style.display = 'inline-block';
+                    
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            customWatermarkImg = img;
+                            if (originalImage) startProcessing();
+                        };
+                        img.src = ev.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            btnClearWatermark.addEventListener('click', () => {
+                customWatermarkInput.value = '';
+                customWatermarkImg = null;
+                customWatermarkName.textContent = '(無)';
+                btnClearWatermark.style.display = 'none';
+                if (originalImage) startProcessing();
+            });
+            
+            [customWatermarkPosition, customWatermarkSize, customWatermarkOpacity].forEach(el => {
+                el.addEventListener('input', () => {
+                    if (originalImage && customWatermarkImg) {
+                        // debounce or just re-render
+                        startProcessing();
+                    }
+                });
+            });
+            
+            function applyCustomWatermark(ctxTarget, width, height) {
+                if (!customWatermarkImg) return;
+                
+                const opacity = parseInt(customWatermarkOpacity.value) / 100;
+                const sizePercent = parseInt(customWatermarkSize.value) / 100;
+                const position = customWatermarkPosition.value;
+                
+                ctxTarget.globalAlpha = opacity;
+                
+                let w = width * sizePercent;
+                let h = w * (customWatermarkImg.height / customWatermarkImg.width);
+                
+                let x = 0, y = 0;
+                const margin = width * 0.02;
+                
+                switch(position) {
+                    case 'bottom-right': x = width - w - margin; y = height - h - margin; break;
+                    case 'bottom-left': x = margin; y = height - h - margin; break;
+                    case 'top-right': x = width - w - margin; y = margin; break;
+                    case 'top-left': x = margin; y = margin; break;
+                    case 'center': x = (width - w) / 2; y = (height - h) / 2; break;
+                }
+                
+                ctxTarget.drawImage(customWatermarkImg, x, y, w, h);
+                ctxTarget.globalAlpha = 1.0;
+            }
         });
     </script>
 </body>
