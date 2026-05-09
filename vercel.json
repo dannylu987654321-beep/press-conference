@@ -1,6 +1,14 @@
 {
     "rewrites": [
         {
+            "source": "/watermark",
+            "destination": "/浮水印去除器/index.html"
+        },
+        {
+            "source": "/watermark-ai",
+            "destination": "/浮水印去除器/indexv2.html"
+        },
+        {
             "source": "/",
             "destination": "/記者會/index.html"
         },
